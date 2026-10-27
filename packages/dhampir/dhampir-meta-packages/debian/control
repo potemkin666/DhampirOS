@@ -9,9 +9,10 @@ Build-Depends: debhelper (>= 13), debhelper-compat (= 13)
 Standards-Version: 4.7.2
 Rules-Requires-Root: no
 
-## Installs everything in the Kicksecure LXQt VM flavour, plus the
-## DhampirOS branding. Kicksecure security packages come in through
-## kicksecure-vm-gui-lxqt and are not copied or changed here.
+## Each binary package below pulls in the matching Kicksecure LXQt meta
+## package (VM = --target virtualbox, baremetal = --target iso) plus the
+## DhampirOS branding. Kicksecure security packages come in through those
+## dependencies and are not copied or changed here.
 Package: dhampir-vm-gui-lxqt
 Architecture: all
 Depends: kicksecure-vm-gui-lxqt,
@@ -19,4 +20,13 @@ Depends: kicksecure-vm-gui-lxqt,
  ${misc:Depends}
 Description: DhampirOS VM with LXQt desktop (meta package)
  Installs the Kicksecure LXQt VM packages with DhampirOS branding.
+ Security and hardening come from the Kicksecure packages it depends on.
+
+Package: dhampir-baremetal-gui-lxqt
+Architecture: all
+Depends: kicksecure-baremetal-gui-lxqt,
+ dhampir-branding,
+ ${misc:Depends}
+Description: DhampirOS baremetal (ISO) with LXQt desktop (meta package)
+ Installs the Kicksecure LXQt baremetal packages with DhampirOS branding.
  Security and hardening come from the Kicksecure packages it depends on.
