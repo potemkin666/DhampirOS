@@ -1,6 +1,6 @@
 # How DhampirOS is built
 
-This page explains, in plain language, how we will build `Dhampir.iso` and `Dhampir.ova`.
+This page explains, in plain language, how we will build `Dhampir.iso` and `Dhampir.ova`. It lives under `agents/` because `AGENTS.md` does not allow a `docs/` directory.
 
 **Status: not yet working.** The steps below come from the upstream `derivative-maker` tool. They have not yet been run end-to-end for DhampirOS. Each step will be marked as tested here once it is.
 

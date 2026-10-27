@@ -37,7 +37,7 @@ Dhampir.iso  and  Dhampir.ova
 - **`Dhampir.iso`**: a bootable image you can write to a USB stick or boot in a VM.
 - **`Dhampir.ova`**: a ready-to-import VirtualBox appliance.
 
-Build outputs are **not** stored in Git. They will be published as GitHub Release assets. See [docs/BUILD.md](docs/BUILD.md) for how the builds work.
+Build outputs are **not** stored in Git. They will be published as GitHub Release assets. See [agents/BUILD.md](agents/BUILD.md) for how the builds work.
 
 ## Repository layout
 
@@ -48,8 +48,7 @@ Build outputs are **not** stored in Git. They will be published as GitHub Releas
 | `config/` | Build settings for Dhampir (overlay, not upstream edits). |
 | `packages/dhampir-branding/` | A package with the visible Dhampir identity files. |
 | `kernel/` | Placeholder for future kernel work. Empty for now. |
-| `docs/` | Human documentation, such as [docs/BUILD.md](docs/BUILD.md). |
-| `agents/` | Notes for AI coding agents. See `AGENTS.md`. |
+| `agents/` | Notes for AI coding agents and build reference, such as [agents/BUILD.md](agents/BUILD.md). See `AGENTS.md`. |
 
 ## Current status
 
@@ -66,7 +65,7 @@ Nothing in this repository has been built into an ISO or OVA yet. Do not treat a
 
 ## Further reading
 
-- [docs/BUILD.md](docs/BUILD.md): how the ISO and OVA builds work, in plain language.
+- [agents/BUILD.md](agents/BUILD.md): how the ISO and OVA builds work, in plain language.
 - `README.mediawiki`: the upstream `derivative-maker` documentation.
 - `AGENTS.md`: rules for contributors and AI agents.
 
