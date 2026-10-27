@@ -1,0 +1,5 @@
+## DhampirOS branding files. Upstream Kicksecure uses the same list format
+## in kicksecure-base-files.displace.
+
+/etc/issue.dhampir
+/etc/motd.dhampir
