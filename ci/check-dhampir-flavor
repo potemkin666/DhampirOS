@@ -81,6 +81,10 @@ expect_in_file variables.d/40_version-paths.bsh '"${dist_binary_build_folder}/Dh
 expect_in_file variables.d/40_version-paths.bsh '"${dist_binary_build_folder}/Dhampir.iso"'
 expect_in_file build-steps.d/4310_convert-raw-to-iso '--label "${dist_iso_volume_label:-${dist_build_type_short}}"'
 expect_in_file variables.d/19_flavor-dhampir.bsh 'default_if_empty dist_iso_volume_label "Dhampir"'
+expect_in_file variables.d/19_flavor-dhampir.bsh 'default_if_empty project_clearnet "github.com/potemkin666/DhampirOS"'
+if grep -F -q -- 'project_clearnet "kicksecure.com"' "${repo_root}/variables.d/19_flavor-dhampir.bsh"; then
+   fail "variables.d/19_flavor-dhampir.bsh must not set project_clearnet to kicksecure.com"
+fi
 
 ## 7. Kicksecure and Whonix flavors still registered.
 expect_in_file help-steps/parse-cmd '--flavor kicksecure-lxqt'
