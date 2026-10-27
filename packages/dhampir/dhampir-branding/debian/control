@@ -1,0 +1,17 @@
+## Copyright (C) 2026 potemkin666
+## See the file COPYING for copying conditions.
+
+Source: dhampir-branding
+Section: misc
+Priority: optional
+Maintainer: potemkin666 <183807833+potemkin666@users.noreply.github.com>
+Build-Depends: debhelper (>= 13), debhelper-compat (= 13), config-package-dev
+Standards-Version: 4.7.2
+Rules-Requires-Root: no
+
+Package: dhampir-branding
+Architecture: all
+Depends: kicksecure-base-files, ${misc:Depends}
+Description: DhampirOS visible identity (login banner, welcome text)
+ Replaces the visible Kicksecure login banner and welcome text with
+ DhampirOS wording. Kicksecure security packages are not replaced.
