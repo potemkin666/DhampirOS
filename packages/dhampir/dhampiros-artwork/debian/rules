@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	@test -f assets/rootfs-overlay.tar.gz || { \
+		printf '%s\n' 'DhampirOS artwork payload is missing.' >&2; \
+		printf '%s\n' 'Run ./import-assets.py "/path/to/vampire hunter d.zip" first.' >&2; \
+		exit 1; \
+	}
+
+override_dh_auto_install:
+	mkdir -p debian/dhampiros-artwork
+	tar --extract --gzip --file=assets/rootfs-overlay.tar.gz --directory=debian/dhampiros-artwork
