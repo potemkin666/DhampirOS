@@ -48,17 +48,20 @@ We verified that `./derivative-maker` refuses to run until this is done.
 
 ## Step 1: pick a flavor and a target
 
-Upstream examples use:
+The DhampirOS flavor is `dhampir-lxqt`. Its commands are:
 
 ```
-sudo ./derivative-maker --flavor kicksecure-cli --target iso
-sudo ./derivative-maker --flavor kicksecure-cli --target virtualbox
+sudo ./derivative-maker --flavor dhampir-lxqt --target virtualbox
+sudo ./derivative-maker --flavor dhampir-lxqt --target iso
 ```
 
-- `--target iso` produces a bootable ISO.
-- `--target virtualbox` produces a VirtualBox image. The `.ova` is made inside a Debian chroot, so VirtualBox does not need to be installed on the build machine.
+(Shorthand used in planning: `dhampir-lxqt --target virtualbox` and `dhampir-lxqt --target iso`. The real CLI is the `--flavor` / `--target` form above.)
 
-The `dhampir` flavor name is **planned, not yet added**. Until it is, the commands above build upstream Kicksecure, not DhampirOS.
+- `--target virtualbox` will produce `Dhampir.ova`.
+- `--target iso` will produce `Dhampir.iso`.
+- Both use the Kicksecure build path (`dist_build_type_short=kicksecure`) with the `dhampir-vm-gui-lxqt` or `dhampir-baremetal-gui-lxqt` meta package, which depend on the Kicksecure LXQt packages.
+
+**Status: wired in, not built.** The flavor is registered in the parser and variable files. A static check covers this (`ci/check-dhampir-flavor`). No image build has been run, so these commands are **unverified**. The build environment could not run them (disk space and snapshot.debian.org DNS, see `agents/PHASE2-STOCK-BUILD-LOG.md`).
 
 ## Step 2: what happens during a build
 
@@ -88,5 +91,5 @@ Upload `Dhampir.iso` and `Dhampir.ova` as GitHub Release assets. The `.gitignore
 
 ## Open questions
 
-- How to add a `dhampir` flavor cleanly to `derivative-maker`.
+- How to add a `dhampir` flavor cleanly to `derivative-maker`. (Phase 3 added `dhampir-lxqt`. A real build still needs to be verified.)
 - Whether a custom kernel (later phase) needs a separate build step.
