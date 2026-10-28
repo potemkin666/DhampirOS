@@ -53,8 +53,18 @@ squashfs or read-only libguestfs mounts, validates the OVA tar paths and
 manifest, and checks NAT with clipboard, drag/drop, host shares and remote
 display disabled. The offline report checks required security packages,
 authenticated APT updates, inherited GRUB hardening, no debug root shell,
-cloned host keys/identifiers and builder credentials. Debian's vulnerability
+cloned host keys, unique builder identifiers and builder credentials. Debian's vulnerability
 report is retained and available security fixes block release.
+
+The first real-image audit exposed incorrect verifier assumptions. The ISO's
+`config.cfg` sets up GRUB; kernel arguments live in `grub.cfg`. Check every
+live kernel entry there. `dist-base-files` at `056f49a680adeefac` deliberately
+ships the shared privacy ID `b08dfa6083e7567a1921a715000001fb` for both system
+and D-Bus. Require that exact value rather than claiming ID regeneration.
+`repository-dist` at `911537d7e1b0143d` generates authenticated public sources
+on first boot. Verify its enabled service, exact stable-codename arguments,
+unconsumed initializer marker, and pinned initializer/generator/key bytes.
+Do not mistake the missing pre-boot sources file for disabled updates.
 
 BIOS and UEFI QEMU boots have no network, use snapshot disks and capture
 screens without enabling root serial login. The screenshots require actual

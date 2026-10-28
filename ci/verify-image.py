@@ -31,7 +31,7 @@ try:
         run("xorriso", "-osirrox", "on", "-indev", image, "-extract", "/boot/grub", report / "iso-grub")
         iso_config = report / "iso-boot-config.cfg"
         run("xorriso", "-osirrox", "on", "-indev", image, "-extract", "/boot/grub/config.cfg", iso_config)
-        audit_args.append(iso_config)
+        audit_args.append(report / "iso-grub")
         boot_image = image
     else:
         run("./ci/audit-ova.py", image, scratch)
