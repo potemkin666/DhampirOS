@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 import re
 import sys
+from urllib.parse import urlsplit, urlunsplit
 
 root = Path(sys.argv[1]).resolve(strict=True)
 output = Path(sys.argv[2])
@@ -103,6 +104,19 @@ for path in guest_path("/etc/apt").rglob("*"):
     if path.is_file() and path.suffix in (".conf", ".list", ".sources", ""):
         apt_config.append(active(read("/" + str(path.relative_to(root)))))
 apt_text = "\n".join(apt_config)
+source_details = []
+for path in guest_path("/etc/apt").rglob("*"):
+    if path.is_file() and path.suffix in (".list", ".sources"):
+        text = active(read("/" + str(path.relative_to(root))))
+        uris = re.findall(r"(?:[A-Za-z+]+)://[^\s]+", text)
+        public_uris = []
+        for uri in uris:
+            parsed = urlsplit(uri)
+            public_uris.append(urlunsplit((parsed.scheme, parsed.netloc.rsplit("@", 1)[-1],
+                                          parsed.path, "", "")))
+        source_details.append({"file": str(path.relative_to(root)), "uris": public_uris,
+                               "enabled": re.findall(r"^Enabled:\s*(.*)$", text, re.M),
+                               "suites": re.findall(r"^Suites:\s*(.*)$", text, re.M)})
 check("APT does not disable authentication", not re.search(
     r'AllowUnauthenticated\s+["\s]*true|AllowInsecureRepositories\s+["\s]*true|'
     r'trusted\s*=\s*yes|Trusted:\s*yes|Allow-Unauthenticated:\s*yes', apt_text, re.I
@@ -112,7 +126,7 @@ check("Kicksecure update repository configured", "kicksecure" in apt_text.lower(
 
 check("machine ID regenerated on first boot", not read("/etc/machine-id").strip())
 check("D-Bus machine ID regenerated on first boot", not read("/var/lib/dbus/machine-id").strip())
-for seed in ("/var/lib/systemd/random-seed", "/var/lib/urandom/random-seed"):
+for seed in ("/var/lib/systemd/random-seed", "/var/lib/urandom/random-seed", "/var/lib/random-seed"):
     path = guest_path(seed)
     check(f"no cloned entropy seed: {seed}", not path.exists() or path.stat().st_size == 0)
 ssh = guest_path("/etc/ssh")
@@ -143,6 +157,11 @@ for home in ("/root", "/home"):
 report = {
     "status": "passed" if all(c["passed"] for c in checks) else "failed",
     "checks": checks, "accounts": accounts,
+    "configuration_evidence": {
+        "apt_sources": source_details,
+        "machine_ids": {name: read(name).strip() for name in
+                        ("/etc/machine-id", "/var/lib/dbus/machine-id")},
+    },
     "scope": "Offline package, update, boot configuration, host key and credential checks",
     "limitations": ["No guarantee of safety or absence of vulnerabilities",
                     "Boot and desktop interaction require separate verification",
