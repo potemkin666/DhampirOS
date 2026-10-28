@@ -120,6 +120,13 @@ try:
         assert not player_pids()
         session_state(True, False)
         until(lambda: status().get('player_pid') is not None)
+        accessibility = Gio.Settings.new('org.gnome.desktop.interface')
+        accessibility.set_boolean('enable-animations', False)
+        Gio.Settings.sync()
+        until(lambda: status().get('player_pid') is None)
+        accessibility.set_boolean('enable-animations', True)
+        Gio.Settings.sync()
+        until(lambda: status().get('player_pid') is not None)
         session_state(False, False)
         until(lambda: status().get('player_pid') is None)
         session_state(True, False)
@@ -143,6 +150,7 @@ try:
                   'native_frames_change': True, 'reduced_frames_static': True, 'off_no_player': True,
                   'duplicate_launch_one_owner': True, 'light_quality': True, 'lock_hint_stops_player': True,
                   'inactive_session_stops_player': True, 'owner_death_cleans_player': True,
+                  'existing_accessibility_preference': True,
                   'second_session_and_clean_shutdown': True, 'resource_sample': resources}
         print(json.dumps(result, indent=2))
 finally:

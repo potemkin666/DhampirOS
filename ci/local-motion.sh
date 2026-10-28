@@ -22,7 +22,7 @@ fi
 
 motion_repo_root="$(pwd -P)"
 motion_build_dir="$(mktemp --directory --tmpdir="${RUNNER_TEMP}" dhampiros-motion.XXXXXXXX)"
-git archive HEAD packages/dhampir | tar --extract --directory "${motion_build_dir}"
+git -c safe.directory="${motion_repo_root}" archive HEAD packages/dhampir | tar --extract --directory "${motion_build_dir}"
 for motion_package in dhampiros-artwork dhampiros-motion dhampir-meta-packages; do
    cd -- "${motion_build_dir}/packages/dhampir/${motion_package}"
    dpkg-buildpackage --no-sign --build=binary
