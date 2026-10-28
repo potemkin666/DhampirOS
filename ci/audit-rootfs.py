@@ -215,6 +215,12 @@ report = {
         "apt_sources": source_details,
         "machine_ids": {name: read(name).strip() for name in
                         ("/etc/machine-id", "/var/lib/dbus/machine-id")},
+        "program_permissions": {name: {"mode": oct(guest_path(name).stat().st_mode & 0o7777),
+                                       "uid": guest_path(name).stat().st_uid,
+                                       "gid": guest_path(name).stat().st_gid}
+                                for name in ("/usr/bin/dhampiros-motion", "/usr/bin/python3",
+                                             "/usr/libexec/dhampiros-motion/manager.py",
+                                             "/usr/libexec/dhampiros-motion/motionlib.py")},
     },
     "scope": "Offline package, update, boot configuration, host key and credential checks",
     "limitations": ["No guarantee of safety or absence of vulnerabilities",

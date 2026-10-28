@@ -90,21 +90,53 @@ def capture_boot(firmware):
                     if "return" in response:
                         return response["return"]
 
+            def screenshot(name):
+                ppm = evidence / f"{name}.ppm"
+                qmp("screendump", {"filename": str(ppm)})
+                with Image.open(ppm) as frame:
+                    frame.save(evidence / f"{name}.png")
+                ppm.unlink()
+
+            def key(value):
+                qmp("human-monitor-command", {"command-line": f"sendkey {value}"})
+
+            def type_command(command):
+                codes = {" ": "spc", "-": "minus", "/": "slash", ".": "dot", "|": "shift-backslash"}
+                for character in command:
+                    key(codes.get(character, character))
+                    time.sleep(.08)
+                key("ret")
+
             qmp("qmp_capabilities")
             start = time.monotonic()
             for elapsed in captures:
                 if stop.wait(max(0, start + elapsed - time.monotonic())):
                     raise RuntimeError("Boot capture cancelled")
-                ppm = evidence / f"boot-{elapsed}.ppm"
-                qmp("screendump", {"filename": str(ppm)})
-                with Image.open(ppm) as frame:
-                    frame.save(evidence / f"boot-{elapsed}.png")
-                ppm.unlink()
+                screenshot(f"boot-{elapsed}")
                 if elapsed == 20:
                     qmp("human-monitor-command", {"command-line": "sendkey ret"})
                 else:
                     qmp("human-monitor-command", {"command-line": "sendkey shift"})
             shutil.copyfile(evidence / f"boot-{captures[-1]}.png", evidence / "desktop-capture.png")
+            # Normal unprivileged GUI interaction after the unchanged boot
+            # evidence. No root shell, serial login or image policy override.
+            key("meta_l-ret")
+            stop.wait(12)
+            key("alt-f10")
+            stop.wait(3)
+            for name, command in (
+                ("motion-status", "dhampiros-motion status"),
+                ("user-services", "systemctl --user --failed --no-pager"),
+                ("desktop-processes", "pgrep -afu user lxqt"),
+                ("desktop-log", "journalctl --user -b -n 16 --no-pager"),
+            ):
+                key("ctrl-l")
+                type_command(command)
+                stop.wait(6)
+                screenshot(name)
+            key("ctrl-alt-f2")
+            stop.wait(4)
+            screenshot("console-state")
             qmp("quit")
         finally:
             connection.close()
