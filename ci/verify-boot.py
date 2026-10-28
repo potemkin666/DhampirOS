@@ -18,11 +18,33 @@ resources = {"memory_mib": 4096, "processors": 2}
 if target == "virtualbox":
     resources = json.loads((report / "ova-audit.json").read_text())
 
+# Probe acceleration without booting any guest or requiring elevated access.
+# A runner without usable KVM keeps the slower software-emulation lane.
+accelerator = "tcg"
+cpu = "max"
+try:
+    probe = subprocess.run([
+        "qemu-system-x86_64", "-machine", "q35,accel=kvm", "-cpu", "host",
+        "-m", "128", "-nodefaults", "-nic", "none", "-display", "none", "-S", "-qmp", "stdio",
+    ], input='{"execute":"qmp_capabilities"}\n{"execute":"quit"}\n',
+        text=True, capture_output=True, timeout=15, check=False)
+    if probe.returncode == 0:
+        accelerator, cpu = "kvm", "host"
+except subprocess.TimeoutExpired:
+    pass
+captures = (20, 90, 240) if accelerator == "kvm" else (
+    (20, 90, 240, 480, 720) if target == "iso" else (20, 90, 240, 480))
+(report / "boot-environment.json").write_text(json.dumps({
+    "accelerator": accelerator, "cpu_model": cpu, "capture_seconds": captures,
+    "memory_mib": resources["memory_mib"], "processors": resources["processors"],
+    "network": "disabled", "disk_writes": "disposable snapshot",
+}, indent=2) + "\n")
+
 for firmware in ("bios", "uefi"):
     evidence = report / firmware
     evidence.mkdir()
     qmp_path = evidence / "qmp.sock"
-    command = ["qemu-system-x86_64", "-machine", "q35,accel=tcg", "-cpu", "max",
+    command = ["qemu-system-x86_64", "-machine", f"q35,accel={accelerator}", "-cpu", cpu,
                "-m", str(resources["memory_mib"]), "-smp", str(resources["processors"]),
                "-nic", "none", "-display", "none",
                "-qmp", f"unix:{qmp_path},server=on,wait=off", "-no-reboot", "-snapshot",
@@ -63,7 +85,6 @@ for firmware in ("bios", "uefi"):
 
             qmp("qmp_capabilities")
             start = time.monotonic()
-            captures = (20, 90, 240, 480, 720) if target == "iso" else (20, 90, 240, 480)
             for elapsed in captures:
                 time.sleep(max(0, start + elapsed - time.monotonic()))
                 ppm = evidence / f"boot-{elapsed}.ppm"
