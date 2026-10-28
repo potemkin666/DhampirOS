@@ -27,10 +27,11 @@ export dist_build_target_arch=amd64
 export dist_build_version=0.1.0-alpha.1
 export dist_build_redistributable=true
 export dist_build_sign_and_tag=true
+export dist_build_smbios_reader=false
 ./help-steps/signing-key-create
 ./help-steps/sign-and-tag
 
 ./derivative-maker --flavor dhampir-lxqt --target "${image_target}" \
    --arch amd64 --freshness current --repo true --tb closed \
-   --dry-run false --smbios-reader false --serial-console-enable false \
+   --dry-run false --serial-console-enable false \
    --sanity-tests true
