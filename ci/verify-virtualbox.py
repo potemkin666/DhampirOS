@@ -11,6 +11,7 @@ import subprocess
 import sys
 import time
 from urllib.parse import urlparse
+from urllib.request import urlopen
 
 REPOSITORY = "potemkin666/DhampirOS"
 ROOT = Path(__file__).resolve().parent.parent
@@ -31,6 +32,49 @@ def run(*args, **options):
 
 def write_json(path, value):
     path.write_text(json.dumps(value, indent=2) + "\n")
+
+
+def require_disposable_runner():
+    if os.environ.get("GITHUB_REPOSITORY") != REPOSITORY or os.environ.get("RUNNER_ENVIRONMENT") != "github-hosted":
+        raise SystemExit("Host setup is limited to this repository's disposable hosted runner")
+
+
+def setup():
+    require_disposable_runner()
+    REPORT.mkdir(parents=True, exist_ok=True)
+    SCRATCH.mkdir(parents=True, exist_ok=True)
+    # Ubuntu's 7.0.16 DKMS module cannot build against the hosted kernel 7.0.
+    # Authenticate Oracle's scoped APT repository; never use trusted=yes.
+    key = SCRATCH / "oracle.asc"
+    with urlopen("https://www.virtualbox.org/download/oracle_vbox_2016.asc", timeout=60) as response:
+        key.write_bytes(response.read(100_000))
+    if hashlib.sha256(key.read_bytes()).hexdigest() != "49e6801d45f6536232c11be6cdb43fa8e0198538d29d1075a7e10165e1fbafe2":
+        raise SystemExit("Oracle archive signing key changed; review required")
+    key_home = SCRATCH / "key-check"
+    key_home.mkdir(mode=0o700)
+    key_data = run("gpg", "--batch", "--homedir", str(key_home), "--with-colons", "--show-keys", str(key))
+    fingerprints = re.findall(r"^fpr:::::::::([A-F0-9]+):", key_data, re.M)
+    if not fingerprints or fingerprints[0] != "B9F8D658297AF3EFC18D5CDFA2F683C52980AECF":
+        raise SystemExit("Unexpected Oracle archive signing identity")
+    keyring = SCRATCH / "oracle.gpg"
+    run("gpg", "--batch", "--homedir", str(key_home), "--dearmor", "--output", str(keyring), str(key))
+    installed_keyring = "/usr/share/keyrings/dhampiros-ci-oracle.gpg"
+    run("sudo", "install", "-m", "0644", str(keyring), installed_keyring)
+    source = SCRATCH / "oracle.sources"
+    source.write_text(
+        "Types: deb\nURIs: https://download.virtualbox.org/virtualbox/debian\n"
+        f"Suites: noble\nComponents: contrib\nArchitectures: amd64\nSigned-By: {installed_keyring}\n")
+    run("sudo", "install", "-m", "0644", str(source), "/etc/apt/sources.list.d/dhampiros-ci-oracle.sources")
+    (REPORT / "host-apt-update.log").write_text(run("sudo", "apt-get", "update", "--error-on=any"))
+    package_version = "7.2.22-175245~Ubuntu~noble"
+    (REPORT / "host-install.log").write_text(run(
+        "sudo", "apt-get", "install", "--yes", "--no-install-recommends", f"virtualbox-7.2={package_version}"))
+    write_json(REPORT / "host-package.json", {
+        "package": "virtualbox-7.2", "version": package_version,
+        "repository": "https://download.virtualbox.org/virtualbox/debian",
+        "archive_signing_fingerprint": fingerprints[0],
+        "key_sha256": hashlib.sha256(key.read_bytes()).hexdigest(),
+    })
 
 
 def prepare():
@@ -80,8 +124,7 @@ def boot():
     if not (REPORT / "image-identity.json").is_file():
         raise SystemExit("Authenticate the public appliance first")
     # Only this owner-repository disposable hosted runner may change modules.
-    if os.environ.get("GITHUB_REPOSITORY") != REPOSITORY or os.environ.get("RUNNER_ENVIRONMENT") != "github-hosted":
-        raise SystemExit("Boot setup is limited to this repository's disposable hosted runner")
+    require_disposable_runner()
     # A loaded KVM module can reserve VT-x even with no QEMU guest running.
     for module in ("kvm_intel", "kvm_amd", "kvm"):
         if (Path("/sys/module") / module).exists():
@@ -149,4 +192,4 @@ def boot():
 
 
 if __name__ == "__main__":
-    {"prepare": prepare, "boot": boot}[sys.argv[1]]()
+    {"setup": setup, "prepare": prepare, "boot": boot}[sys.argv[1]]()

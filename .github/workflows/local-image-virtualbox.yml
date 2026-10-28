@@ -31,11 +31,13 @@ jobs:
       - name: Bootstrap the disposable VirtualBox host
         run: |
           sudo apt-get update
-          sudo apt-get install --yes --no-install-recommends virtualbox virtualbox-dkms "linux-headers-$(uname -r)" python3-pil
+          sudo apt-get install --yes --no-install-recommends build-essential "linux-headers-$(uname -r)" python3-pil gnupg ca-certificates
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           persist-credentials: false
           fetch-depth: 0
+      - name: Install the pinned VirtualBox host from its authenticated repository
+        run: ./ci/verify-virtualbox.py setup
       - name: Retrieve and authenticate the published appliance
         env:
           GH_TOKEN: ${{ github.token }}
