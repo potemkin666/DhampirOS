@@ -1,3 +1,17 @@
+dhampiros-artwork (0.2-1) unstable; urgency=medium
+
+  * Make the DhampirOS Nocturne look the system default for new users:
+    LXQt theme and icon theme, desktop wallpaper, and QTerminal colour scheme
+    are shipped as /etc/skel defaults and /usr/share data.
+  * Add DhampirNocturne QTerminal colour scheme generated from palette.json.
+  * Ship the source-only GRUB theme without wiring it as GRUB_THEME; the
+    upstream Kicksecure GRUB drop-in still controls boot theming.
+  * Run a static test that every configured theme/asset path exists in the
+    payload during the build.
+  * Drop the unused @KEYMAP_SHORT@ placeholder from the GRUB theme label.
+
+ -- potemkin666 <183807833+potemkin666@users.noreply.github.com>  Wed, 28 Oct 2026 00:09:00 +0000
+
 dhampiros-artwork (0.1-1) unstable; urgency=medium
 
   * Initial DhampirOS Nocturne artwork package.

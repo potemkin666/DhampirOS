@@ -34,4 +34,6 @@ The pack states that its new illustrations were generated for DhampirOS, its vec
 
 ## Still to wire up
 
-Installing artwork is separate from selecting it as the default. A later change should test and then enable the LXQt theme, icon/cursor theme and GRUB theme against the actual Kicksecure image. Login/greetd integration must merge only visual values and preserve upstream authentication/session behaviour.
+Installing artwork is separate from selecting it as the default. The `dhampiros-artwork` 0.2 package ships system-wide defaults for new users (`/etc/skel` LXQt `lxqt.conf`, pcmanfm-qt wallpaper, QTerminal `DhampirNocturne` colour scheme). These are visual only. Not yet wired: GRUB (`GRUB_THEME` is left to the upstream Kicksecure drop-in), cursor, Plymouth, login/greetd, and labwc, because the tracked `source-rootfs` payload has no assets for them. Login/greetd integration must merge only visual values and preserve upstream authentication/session behaviour.
+
+The static test `packages/dhampir/dhampiros-artwork/tests/test-theme-paths.sh` checks that every configured path exists in `assets/source-rootfs` and runs during `debian/rules override_dh_auto_test`.
