@@ -1,12 +1,15 @@
 #!/usr/bin/python3
 """AI-Assisted. Capture network-isolated BIOS/UEFI boots without root backdoors."""
 
+from concurrent.futures import ThreadPoolExecutor
 import json
+import os
 from pathlib import Path
 import shutil
 import socket
 import subprocess
 import sys
+import threading
 import time
 
 from PIL import Image
@@ -34,13 +37,17 @@ except subprocess.TimeoutExpired:
     pass
 captures = (20, 90, 240) if accelerator == "kvm" else (
     (20, 90, 240, 480, 720) if target == "iso" else (20, 90, 240, 480))
+physical_mib = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES") // 1024**2
+workers = 2 if (os.cpu_count() or 1) >= 4 and physical_mib >= 2 * resources["memory_mib"] + 4096 else 1
+stop = threading.Event()
 (report / "boot-environment.json").write_text(json.dumps({
     "accelerator": accelerator, "cpu_model": cpu, "capture_seconds": captures,
     "memory_mib": resources["memory_mib"], "processors": resources["processors"],
+    "parallel_firmwares": workers,
     "network": "disabled", "disk_writes": "disposable snapshot",
 }, indent=2) + "\n")
 
-for firmware in ("bios", "uefi"):
+def capture_boot(firmware):
     evidence = report / firmware
     evidence.mkdir()
     qmp_path = evidence / "qmp.sock"
@@ -86,7 +93,8 @@ for firmware in ("bios", "uefi"):
             qmp("qmp_capabilities")
             start = time.monotonic()
             for elapsed in captures:
-                time.sleep(max(0, start + elapsed - time.monotonic()))
+                if stop.wait(max(0, start + elapsed - time.monotonic())):
+                    raise RuntimeError("Boot capture cancelled")
                 ppm = evidence / f"boot-{elapsed}.ppm"
                 qmp("screendump", {"filename": str(ppm)})
                 with Image.open(ppm) as frame:
@@ -103,3 +111,12 @@ for firmware in ("bios", "uefi"):
             if process.poll() is None:
                 process.terminate()
             process.wait(timeout=20)
+
+
+pool = ThreadPoolExecutor(max_workers=workers)
+try:
+    for completed in pool.map(capture_boot, ("bios", "uefi")):
+        pass
+finally:
+    stop.set()
+    pool.shutdown(wait=True, cancel_futures=True)
