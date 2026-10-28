@@ -7,7 +7,7 @@ dhampiros-artwork (0.3-1) unstable; urgency=medium
   * Include seamless Nocturne motion loops at 1080p and a lighter 720p size.
   * Apply tracked assets and new-user defaults after any legacy overlay.
 
- -- potemkin666 <183807833+potemkin666@users.noreply.github.com>  Wed, 28 Oct 2026 10:30:00 +0000
+ -- potemkin666 <183807833+potemkin666@users.noreply.github.com>  Wed, 28 Oct 2026 01:30:00 +0000
 
 dhampiros-artwork (0.2-1) unstable; urgency=medium
 

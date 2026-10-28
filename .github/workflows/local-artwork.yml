@@ -43,7 +43,7 @@ jobs:
       - name: Prepare the artwork build container
         run: |
           apt-get update
-          apt-get install --yes --no-install-recommends git ca-certificates debhelper python3 nodejs
+          apt-get install --yes --no-install-recommends git ca-certificates build-essential debhelper python3 nodejs
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
