@@ -18,6 +18,7 @@ Architecture: all
 Depends: kicksecure-vm-gui-lxqt,
  dhampir-branding,
  dhampiros-artwork,
+ dhampiros-motion,
  ${misc:Depends}
 Description: DhampirOS VM with LXQt desktop (meta package)
  Installs the Kicksecure LXQt VM packages with DhampirOS branding and artwork.
@@ -28,6 +29,7 @@ Architecture: all
 Depends: kicksecure-baremetal-gui-lxqt,
  dhampir-branding,
  dhampiros-artwork,
+ dhampiros-motion,
  ${misc:Depends}
 Description: DhampirOS baremetal (ISO) with LXQt desktop (meta package)
  Installs the Kicksecure LXQt baremetal packages with DhampirOS branding and artwork.

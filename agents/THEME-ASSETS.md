@@ -21,10 +21,17 @@ New-user `/etc/skel` settings select the DhampirOS LXQt/icon themes,
 Rainbound Hunter wallpaper in zoom mode, and DhampirNocturne QTerminal
 colours. Existing user settings are not rewritten.
 
-The supplied motion loops are optional wallpaper resources. PCManFM-Qt's
-standard wallpaper setting uses a still image. Do not claim the native
-LXQt desktop plays video by default. GRUB selection, cursor selection,
-Plymouth, login/greetd and labwc activation still need runtime integration.
+Phase 6 adds the separate `dhampiros-motion` runtime to both Dhampir GUI
+meta packages. The pinned session is LXQt/Wayland/labwc. Its new-user LXQt
+desktop loader places a local GTK layer-shell/GStreamer wallpaper below
+PCManFM icons, with Full/Reduced/Off modes, visibility/accessibility checks,
+cursor selection and the native rider still as fallback. X11 stays static.
+See [MOTION.md](MOTION.md) for architecture, controls and validation limits.
+
+The existing 36-frame boot ring is packaged as a Plymouth two-step theme,
+with standard upstream prompt assets and their copyright. Activation is
+pending encrypted/native boot validation; no boot hooks are added. GRUB
+selection, greetd/wlgreet visuals and labwc effect settings remain static.
 Authentication, hardening, session policy and kernel/network settings
 remain upstream-controlled.
 
@@ -46,3 +53,6 @@ web/native icons, SVG parsing, cursor file headers and required resources.
 during the Debian build. `bash ci/check-artwork.sh` also checks JavaScript
 syntax and builds this artwork package on Debian with debhelper installed;
 the focused `local-artwork.yml` workflow runs it without building an ISO.
+`local-motion.yml` builds all three changed packages from a clean Git archive
+and runs the native headless compositor smoke. Its logind fixture is explicitly
+separate from real login/logout and physical-device validation.

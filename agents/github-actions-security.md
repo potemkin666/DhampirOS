@@ -81,3 +81,8 @@ are mutable.
 `local-artwork.yml` also uses this Debian digest and the checkout v6.0.2
 pin above. It runs only the standalone artwork checks and package build;
 it does not initialize or execute derivative-maker submodules.
+
+`local-motion.yml` uses the same Debian digest, checkout v6.0.2 and
+upload-artifact v7.0.1 pins above. Its package extraction and headless
+desktop tests run only inside the disposable CI container, as a separate
+unprivileged user for graphical runtime checks. No upstream submodules run.
