@@ -1,4 +1,4 @@
-name: Publish reviewed DhampirOS alpha
+name: Stage reviewed DhampirOS alpha
 
 on:
   push:

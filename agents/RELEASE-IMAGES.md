@@ -114,3 +114,21 @@ valid catalogue, unsafe URL rejection and the existing interactive preview.
 Use a static server with correct MIME types and byte-range support for the
 video preview. The Windows Python stock server produced incomplete image
 loads; a Node static/range server passed with the same unchanged images.
+
+## First reviewed full image pair
+
+Build `40751365822`, source `db5152d816559ed2365f81486c4106b17f20af83`,
+produced the actual 0.1.0-alpha.1 AMD64 pair. Verification `40762495912`
+passed 70 ISO and 64 appliance filesystem checks, the appliance archive
+checks, origin attestations and the current available-security-fix gate.
+The final scan required no vulnerability exclusions. All four original KVM
+desktop captures were viewed and show the Dhampir artwork. The original ISO
+BIOS capture is copied byte-for-byte into the website's expandable preview.
+
+TCG caused severe guest CPU stalls and misleading blank captures. KVM
+availability alone was insufficient: device permissions changed after the
+initial probe. The disposable verifier now uses a runner-owned KVM node and
+a scoped udev rule; no guest security setting is changed. Normal-user GUI
+diagnostics are captured after the untouched boot evidence. Their first typed
+command can lose a prefix while the terminal maximizes; that automation
+artifact is not evidence of a missing installed command.

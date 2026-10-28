@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""AI-Assisted. One-shot publication after a committed, digest-bound boot review.
+"""AI-Assisted. Stage reviewed files in an owner-created release draft.
 
 No guest image programs execute in this job. Write permission is isolated from
 the source builder and VM verifier; this job copies and hashes reviewed data.
@@ -59,40 +59,34 @@ for image in Path("candidates").rglob("DhampirOS-*.ova"):
 execute("./ci/prepare-image-release.py", "--candidates", "candidates", "--verification", "verified",
         "--review", review_file, "--output", "prepared-release")
 
-notes = Path("release-notes.txt")
-notes.write_text(
-    "Experimental DhampirOS alpha for AMD64, with the Nocturne artwork and native motion.\n\n"
-    f"Exact image source: {build['head_sha']}\n"
-    f"Build and provenance: {build['html_url']}\n"
-    f"Independent verification: {verification['html_url']}\n\n"
-    "Includes SHA256SUMS, a bounded verification report and an evidence archive with package "
-    "inventories, vulnerability findings and reviewed BIOS/UEFI QEMU desktop captures.\n\n"
-    "For isolated VM testing. Unresolved upstream tracker findings remain in the report; "
-    "this alpha is not ready for sensitive or production workloads.\n\n"
-    "Independent Kicksecure-based derivative; not an official Kicksecure release. "
-    "Not a security certification or guarantee. Physical hardware, Secure Boot and actual "
-    "VirtualBox runtime remain unverified. Review the report before use.\n",
-    encoding="utf-8",
-)
 existing = subprocess.run(["gh", "release", "view", TAG, "--repo", REPOSITORY,
-                           "--json", "isDraft,targetCommitish"], capture_output=True, text=True)
+                           "--json", "apiUrl,isDraft,targetCommitish"], capture_output=True, text=True)
 if existing.returncode == 0:
     state = json.loads(existing.stdout)
     if not state["isDraft"] or state["targetCommitish"] != build["head_sha"]:
         raise SystemExit("Refusing to replace an existing public or differently sourced release")
 else:
-    execute("gh", "release", "create", TAG, "--repo", REPOSITORY, "--draft", "--prerelease",
-            "--target", build["head_sha"], "--title", "DhampirOS 0.1.0 alpha 1",
-            "--notes-file", notes)
+    raise SystemExit("The repository owner must create the exact-source draft before staging assets")
+release_id = state["apiUrl"].rsplit("/", 1)[-1]
+if not re.fullmatch(r"[0-9]+", release_id):
+    raise SystemExit("Invalid draft release identity")
 files = sorted(path for path in Path("prepared-release").iterdir() if path.name != "catalogue-proposal.json")
-execute("gh", "release", "upload", TAG, "--repo", REPOSITORY, "--clobber", *files)
-release = gh_json("api", f"repos/{REPOSITORY}/releases/tags/{TAG}")
+release = gh_json("api", f"repos/{REPOSITORY}/releases/{release_id}")
+remote = {asset["name"]: asset for asset in release["assets"]}
+pending = []
+for file in files:
+    with file.open("rb") as payload:
+        expected = "sha256:" + hashlib.file_digest(payload, "sha256").hexdigest()
+    if remote.get(file.name, {}).get("digest") != expected or remote[file.name]["size"] != file.stat().st_size:
+        pending.append(file)
+if pending:
+    execute("gh", "release", "upload", TAG, "--repo", REPOSITORY, "--clobber", *pending)
+release = gh_json("api", f"repos/{REPOSITORY}/releases/{release_id}")
 remote = {asset["name"]: asset for asset in release["assets"]}
 for file in files:
     with file.open("rb") as payload:
         expected = "sha256:" + hashlib.file_digest(payload, "sha256").hexdigest()
     if remote.get(file.name, {}).get("digest") != expected or remote[file.name]["size"] != file.stat().st_size:
         raise SystemExit(f"Uploaded release asset integrity mismatch: {file.name}")
-execute("gh", "release", "edit", TAG, "--repo", REPOSITORY, "--draft=false")
-print(f"Published reviewed experimental files: https://github.com/{REPOSITORY}/releases/tag/{TAG}")
-print("The website catalogue still requires public URL verification and a separate source update.")
+print(f"Staged and hash-verified the reviewed experimental files for {TAG}.")
+print("The repository owner publishes release metadata; then public URL verification is required before enabling the catalogue.")

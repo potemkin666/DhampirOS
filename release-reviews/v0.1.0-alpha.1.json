@@ -72,5 +72,6 @@
       "network": "disabled",
       "disk_writes": "disposable snapshot"
     }
-  }
+  },
+  "publication_boundary": "Owner creates and publishes release metadata. CI stages and hash-verifies actual reviewed files in the owner-created draft; public URLs are checked before enabling the website."
 }
