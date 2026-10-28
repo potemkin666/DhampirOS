@@ -9,7 +9,8 @@ job is green.
 ## Build and trust boundary
 
 `local-images.yml` first checks all four isolated Dhampir source packages with
-lintian failing on errors and warnings. The full `dhampir-lxqt` ISO and
+the full builder's lintian flags, rejecting any diagnostic output, including
+informational and pedantic tags. The full `dhampir-lxqt` ISO and
 VirtualBox targets then run on disposable amd64 Linux runners, using the
 upstream pinned Docker build environment and pinned submodules. Guest APT
 freshness is `current`; signed upstream update repositories remain enabled.
@@ -32,9 +33,14 @@ absence of vulnerabilities. Never upload private CI signing keys.
 
 Package-specific lintian overrides cover exact `/etc/skel` visual defaults
 for newly created distribution accounts. They do not modify existing homes.
-The desktop command's manual-page override follows this repository's policy
-against AI-authored end-user feature documentation. Other packaging errors
-and warnings still fail closed.
+Other packaging findings still fail closed. The full builder's existing
+suppression of manual-page checks is retained; end-user feature documentation
+remains part of the human wiki process.
+
+The upstream package builder publishes its local APT repository only after
+all packages build, so there are no cross-component build dependencies. Motion
+policy tests remain self-contained; installed artwork paths are checked by
+the native runtime integration and independently in both finished images.
 
 ## Independent verification
 
