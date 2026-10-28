@@ -66,6 +66,9 @@ class PolicyTests(unittest.TestCase):
 
     def test_assets_and_loader(self):
         root = PACKAGE.parent / 'dhampiros-artwork/assets/source-rootfs'
+        if not root.is_dir():
+            # Isolated Debian source builds install the declared artwork build dependency.
+            root = Path('/')
         for asset in [motionlib.STILL, motionlib.TRANSPARENT, *motionlib.VIDEOS.values()]:
             self.assertTrue((root / asset.relative_to('/')).is_file(), str(asset))
         self.assertIn('X-LXQt-Module=true', (PACKAGE / 'data/lxqt-desktop.desktop').read_text())

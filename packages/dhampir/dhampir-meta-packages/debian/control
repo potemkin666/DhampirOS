@@ -32,5 +32,6 @@ Depends: kicksecure-baremetal-gui-lxqt,
  dhampiros-motion,
  ${misc:Depends}
 Description: DhampirOS baremetal (ISO) with LXQt desktop (meta package)
- Installs the Kicksecure LXQt baremetal packages with DhampirOS branding and artwork.
+ Installs the Kicksecure LXQt baremetal packages with DhampirOS branding
+ and artwork.
  Security and hardening come from the Kicksecure packages it depends on.

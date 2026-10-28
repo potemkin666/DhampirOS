@@ -26,6 +26,9 @@ git -c safe.directory="${motion_repo_root}" archive HEAD packages/dhampir | tar 
 for motion_package in dhampiros-artwork dhampiros-motion dhampir-meta-packages; do
    cd -- "${motion_build_dir}/packages/dhampir/${motion_package}"
    dpkg-buildpackage --no-sign --build=binary
+   if [ "${motion_package}" = dhampiros-artwork ]; then
+      dpkg --install "${motion_build_dir}"/packages/dhampir/dhampiros-artwork_*.deb
+   fi
 done
 cd -- "${motion_repo_root}"
 install --directory --owner=nobody --group=nogroup --mode=0755 artifacts
