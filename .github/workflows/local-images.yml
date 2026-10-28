@@ -38,6 +38,10 @@ jobs:
   build:
     needs: packages
     if: github.repository == 'potemkin666/DhampirOS'
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
     strategy:
       fail-fast: false
       matrix:
@@ -69,6 +73,10 @@ jobs:
       - name: Save public build-tool container cache
         if: always() && steps.dmimg-cache.outputs.cache-hit != 'true'
         run: ./ci/dm-docker-image-cache save
+      - name: Record cryptographic provenance for the actual image
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6  # v4.2.2
+        with:
+          subject-path: artifacts/*.${{ matrix.target == 'iso' && 'iso' || 'ova' }}
       - name: Preserve candidates and build evidence for independent verification
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
