@@ -82,18 +82,25 @@ def main():
             print('failed', flush=True)
             pipeline.set_state(Gst.State.NULL)
         elif event.type == Gst.MessageType.ASYNC_DONE:
-            for stack in stacks:
-                stack.set_visible_child_name('video')
-            if not announced:
+            if not paused_hidden:
+                for stack in stacks:
+                    stack.set_visible_child_name('video')
+            if not announced and not paused_hidden:
                 announced = True
                 print('ready', flush=True)
+
+    def resume_visible():
+        # Start decoding outside GTK's paint callback. Reopening the local
+        # pipeline avoids stale sink buffers after a compositor lock.
+        pipeline.set_state(Gst.State.PLAYING)
+        return GLib.SOURCE_REMOVE
 
     def painted(clock):
         nonlocal paused_hidden
         frame_times[clock] = time.monotonic()
         if paused_hidden:
             paused_hidden = False
-            pipeline.set_state(Gst.State.PLAYING)
+            GLib.idle_add(resume_visible)
 
     def visibility_probe():
         nonlocal paused_hidden
@@ -101,7 +108,9 @@ def main():
         # or locked. Probe with an occasional still redraw, not video decode.
         if frame_times and time.monotonic() - max(frame_times.values()) > 5 and not paused_hidden:
             paused_hidden = True
-            pipeline.set_state(Gst.State.PAUSED)
+            pipeline.set_state(Gst.State.NULL)
+            for stack in stacks:
+                stack.set_visible_child_name('still')
         for window in windows:
             window.queue_draw()
         if os.environ.get('DHAMPIROS_MOTION_DEBUG') == '1':
