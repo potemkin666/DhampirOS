@@ -10,6 +10,9 @@ override_dh_auto_build:
 		exit 1; \
 	fi
 
+override_dh_auto_test:
+	bash tests/test-theme-paths.sh
+
 override_dh_auto_install:
 	mkdir -p debian/dhampiros-artwork
 	@if [ -f assets/rootfs-overlay.tar.gz ]; then \
