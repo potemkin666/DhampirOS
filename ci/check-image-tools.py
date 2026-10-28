@@ -11,7 +11,7 @@ import tempfile
 
 import yaml
 
-for pattern in ("image-*.py", "audit-*.py", "verify-*.py", "prepare-image-release.py", "check-image-tools.py"):
+for pattern in ("image-*.py", "audit-*.py", "verify-*.py", "prepare-image-release.py", "publish-image-release.py", "check-image-tools.py"):
     for script in Path("ci").glob(pattern):
         ast.parse(script.read_text())
 for workflow in Path(".github/workflows").glob("local-image*.yml"):
