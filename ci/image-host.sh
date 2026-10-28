@@ -23,9 +23,9 @@ case "${1:-}" in
    prepare)
       ./ci/free-disk
       git submodule update --init --recursive --jobs 8
-      mkdir --parents -- artifacts
-      git rev-parse HEAD > artifacts/source-commit.txt
-      git submodule status --recursive > artifacts/source-submodules.txt
+      mkdir --parents -- "${RUNNER_TEMP}/dhampiros-image-evidence"
+      git rev-parse HEAD > "${RUNNER_TEMP}/dhampiros-image-evidence/source-commit.txt"
+      git submodule status --recursive > "${RUNNER_TEMP}/dhampiros-image-evidence/source-submodules.txt"
       ;;
    build)
       case "${IMAGE_TARGET:-}" in
@@ -33,6 +33,9 @@ case "${1:-}" in
          *) printf '%s\n' 'Unsupported image target.' >&2; exit 1 ;;
       esac
       ./docker/derivative-maker-docker-run -- ./ci/image-container.sh "${IMAGE_TARGET}"
+      mkdir --parents -- artifacts
+      cp -- "${RUNNER_TEMP}/dhampiros-image-evidence/source-commit.txt" artifacts/
+      cp -- "${RUNNER_TEMP}/dhampiros-image-evidence/source-submodules.txt" artifacts/
       find "${HOME}/binary_mnt" -type f \( -name '*.iso' -o -name '*.ova' -o -name '*buildinfo*' -o -name 'dm-source-state' -o -name '*packages*' \) -print
       ./ci/image-collect.py "${HOME}/binary_mnt" "${IMAGE_TARGET}"
       ;;

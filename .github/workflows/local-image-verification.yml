@@ -13,6 +13,7 @@ on:
       - '.github/workflows/local-image-verification.yml'
       - 'ci/verify-*.py'
       - 'ci/audit-*.py'
+      - 'ci/image-*.sh'
 
 permissions:
   contents: read

@@ -30,6 +30,7 @@ export dist_build_sign_and_tag=true
 export dist_build_smbios_reader=false
 ./help-steps/signing-key-create
 ./help-steps/sign-and-tag
+export dist_build_sign_and_tag=false
 
 ./derivative-maker --flavor dhampir-lxqt --target "${image_target}" \
    --arch amd64 --freshness current --repo true --tb closed --freedom false \
