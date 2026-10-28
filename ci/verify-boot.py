@@ -54,6 +54,13 @@ stop = threading.Event()
 def capture_boot(firmware):
     evidence = report / firmware
     evidence.mkdir()
+    if Path("/dev/kvm").exists():
+        device = Path("/dev/kvm").stat()
+        (evidence / "kvm-device.json").write_text(json.dumps({
+            "device_uid": device.st_uid, "device_gid": device.st_gid,
+            "device_mode": oct(device.st_mode & 0o7777), "process_uid": os.getuid(),
+            "process_groups": os.getgroups(),
+        }, indent=2) + "\n")
     qmp_path = evidence / "qmp.sock"
     command = ["qemu-system-x86_64", "-machine", f"q35,accel={accelerator}", "-cpu", cpu,
                "-m", str(resources["memory_mib"]), "-smp", str(resources["processors"]),

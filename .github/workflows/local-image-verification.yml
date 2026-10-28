@@ -68,7 +68,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes --no-install-recommends libguestfs-tools qemu-system-x86 qemu-utils ovmf xorriso squashfs-tools python3-pil debsecan acl
           if [ -c /dev/kvm ]; then
-            sudo setfacl -m "u:$(id -un):rw" /dev/kvm
+            printf 'KERNEL=="kvm", OWNER="%s", MODE="0600"\n' "$(id -un)" | sudo tee /etc/udev/rules.d/99-dhampiros-kvm.rules >/dev/null
+            sudo udevadm control --reload-rules
+            sudo udevadm trigger --subsystem-match=misc --sysname-match=kvm
+            sudo udevadm settle
+            sudo chown "$(id -u)" /dev/kvm
+            sudo chmod 0600 /dev/kvm
           fi
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
