@@ -167,10 +167,11 @@ try:
         # The normal native file manager remains available after owner death.
         assert subprocess.run(['pcmanfm-qt', '--profile', 'dhampiros-motion', '--set-wallpaper',
                                '/usr/share/backgrounds/dhampiros/nocturne-rider.jpg'], timeout=5).returncode == 0
-        # Clean up that remaining desktop before a second login-equivalent run.
-        subprocess.run(['pcmanfm-qt', '--profile', 'dhampiros-motion', '--quit'], timeout=5, check=False)
+        # Restart after a crash must reattach to that surviving desktop,
+        # preserving file-manager windows rather than creating another one.
         manager = launch([CLI, 'desktop'])
         until(lambda: status().get('player_pid') is not None)
+        assert status()['desktop_pid'] == resources['desktop_pid']
         manager.terminate()
         manager.wait(timeout=8)
         until(lambda: not player_pids())

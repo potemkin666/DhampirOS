@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import socket
 import subprocess
 import tempfile
@@ -125,6 +126,8 @@ def prepare_profile():
     if not target.exists():
         source = CONFIG_HOME / 'pcmanfm-qt/lxqt/settings.conf'
         atomic_text(target, source.read_text(encoding='utf-8') if source.exists() else '[Desktop]\n')
+        for layout in source.parent.glob('desktop-items*.conf'):
+            shutil.copy2(layout, target.parent / layout.name)
     ini_set(target, 'Desktop', 'Wallpaper', str(STILL))
     ini_set(target, 'Desktop', 'WallpaperMode', 'zoom')
 

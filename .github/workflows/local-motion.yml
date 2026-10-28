@@ -34,7 +34,7 @@ jobs:
       - name: Bootstrap the disposable build and headless desktop container
         run: |
           apt-get update
-          apt-get install --yes --no-install-recommends git ca-certificates build-essential debhelper python3 python3-gi python3-pil gir1.2-gtk-3.0 gir1.2-gtklayershell-0.1 gir1.2-gtksessionlock-0.1 gir1.2-gstreamer-1.0 gstreamer1.0-gtk3 gstreamer1.0-plugins-base gstreamer1.0-plugins-good pcmanfm-qt qt6-wayland qt6-svg-plugins layer-shell-qt labwc grim dbus-daemon shellcheck gsettings-desktop-schemas
+          apt-get install --yes --no-install-recommends git ca-certificates build-essential debhelper python3 python3-gi python3-pil gir1.2-gtk-3.0 gir1.2-gtklayershell-0.1 gir1.2-gtksessionlock-0.1 libgtk-session-lock0 gir1.2-gstreamer-1.0 gstreamer1.0-gtk3 gstreamer1.0-plugins-base gstreamer1.0-plugins-good pcmanfm-qt qt6-wayland qt6-svg-plugins layer-shell-qt labwc grim dbus-daemon shellcheck gsettings-desktop-schemas
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:

@@ -42,6 +42,50 @@ def terminate(child):
         pass
 
 
+def desktop_identity(pid):
+    if not isinstance(pid, int) or pid < 2:
+        return None
+    try:
+        proc = Path(f'/proc/{pid}')
+        fields = (proc / 'stat').read_text().rpartition(') ')[2].split()
+        arguments = (proc / 'cmdline').read_bytes().split(b'\0')
+        if (proc.stat().st_uid == os.getuid() and fields[0] != 'Z'
+                and os.getpgid(pid) == pid and arguments[0] == b'/usr/bin/pcmanfm-qt'
+                and b'--profile' in arguments and PROFILE.encode() in arguments):
+            return fields[19]
+    except (OSError, IndexError, ValueError):
+        pass
+    return None
+
+
+class ExistingDesktop:
+    """Reattach only to our surviving desktop, with PID reuse checks."""
+
+    def __init__(self, pid, start):
+        self.pid, self.start = pid, start
+
+    def poll(self):
+        return None if desktop_identity(self.pid) == self.start else 0
+
+    def wait(self, timeout):
+        deadline = time.monotonic() + timeout
+        while self.poll() is None:
+            if time.monotonic() >= deadline:
+                raise subprocess.TimeoutExpired('owned desktop', timeout)
+            time.sleep(.05)
+        return 0
+
+
+def existing_desktop():
+    try:
+        lease = json.loads((runtime_dir() / 'desktop.json').read_text())
+        if lease.get('start') and desktop_identity(lease.get('pid')) == lease['start']:
+            return ExistingDesktop(lease['pid'], lease['start'])
+    except (OSError, ValueError, TypeError):
+        pass
+    return None
+
+
 class Desktop:
     def __init__(self):
         self.player = self.desktop = None
@@ -179,6 +223,9 @@ class Desktop:
             print('DhampirOS desktop motion is already running.')
             return 0
         prepare_profile()
+        self.desktop = existing_desktop()
+        if self.desktop:
+            wallpaper(STILL)
         control_path = runtime_dir() / 'control.sock'
         control_path.unlink(missing_ok=True)
         server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -192,8 +239,11 @@ class Desktop:
             self.reconcile()
             if self.player:
                 ini_set(CONFIG_HOME / 'pcmanfm-qt' / PROFILE / 'settings.conf', 'Desktop', 'Wallpaper', str(TRANSPARENT))
-            self.desktop = subprocess.Popen(['/usr/bin/pcmanfm-qt', '--profile', PROFILE, '--desktop', '--daemon-mode'],
-                                            start_new_session=True, stdin=subprocess.DEVNULL)
+            if self.desktop is None:
+                self.desktop = subprocess.Popen(['/usr/bin/pcmanfm-qt', '--profile', PROFILE, '--desktop', '--daemon-mode'],
+                                                start_new_session=True, stdin=subprocess.DEVNULL)
+                atomic_text(runtime_dir() / 'desktop.json', json.dumps({'pid': self.desktop.pid,
+                                                                      'start': desktop_identity(self.desktop.pid)}))
             next_policy = time.monotonic() + 2
             while self.running and self.desktop.poll() is None:
                 readers = [server] + ([self.player.stdout] if self.player else [])
@@ -229,6 +279,7 @@ class Desktop:
             terminate(self.desktop)
             server.close()
             control_path.unlink(missing_ok=True)
+            (runtime_dir() / 'desktop.json').unlink(missing_ok=True)
             lock.close()
 
     def shutdown(self, _signal, _frame):
