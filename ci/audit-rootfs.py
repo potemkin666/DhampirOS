@@ -73,6 +73,12 @@ check("Dhampir desktop meta package", any(
 ))
 (output / "packages.json").write_text(json.dumps(packages, indent=2, sort_keys=True) + "\n")
 
+for asset in ("/usr/share/backgrounds/dhampiros/nocturne-rider.jpg",
+              "/usr/share/dhampiros/motion/transparent.png",
+              "/usr/share/dhampiros/motion/nocturne-rider-1080p.webm",
+              "/usr/share/dhampiros/motion/nocturne-rider-720p-light.webm"):
+    check(f"installed visual resource: {asset}", guest_path(asset).is_file())
+
 check("DhampirOS identity", "DhampirOS" in read("/etc/issue") and
       bool(read("/etc/dhampir_version").strip()))
 grub = active(read("/boot/grub/grub.cfg"))

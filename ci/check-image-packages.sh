@@ -28,8 +28,16 @@ for package_name in dhampir-branding dhampir-meta-packages dhampiros-artwork dha
    cd -- "${package_isolated}"
    tar --create --xz --exclude=./debian --file="../${package_name}_${package_upstream}.orig.tar.xz" .
    dpkg-buildpackage --no-sign --build=full
-   lintian --allow-root --fail-on error,warning "../${package_name}_${package_version}_amd64.changes"
-   if [ "${package_name}" = dhampiros-artwork ]; then
-      dpkg --install "../${package_name}_${package_version}_all.deb"
+   package_lint_status=0
+   package_lint_output="$(lintian --allow-root --quiet --pedantic --info --display-info \
+      --suppress-tags missing-tests-control \
+      --suppress-tags systemd-service-file-missing-documentation-key \
+      --suppress-tags orig-tarball-missing-upstream-signature \
+      --suppress-tags no-manual-page \
+      --suppress-tags maintainer-script-ignores-errors \
+      "../${package_name}_${package_version}_amd64.changes" 2>&1)" || package_lint_status="$?"
+   if [ "${package_lint_status}" -ne 0 ] || [ -n "${package_lint_output}" ]; then
+      printf '%s\n' "${package_lint_output}" >&2
+      exit 1
    fi
 done

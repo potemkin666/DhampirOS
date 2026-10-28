@@ -1,6 +1,7 @@
 dhampiros-motion (0.1-2) unstable; urgency=medium
 
-  * Declare the artwork build dependency for isolated package tests.
+  * Keep standalone policy tests independent of sibling source packages.
+  * Check installed artwork in native integration and image verification.
   * Declare the exact new-account motion templates as distribution defaults.
 
  -- potemkin666 <183807833+potemkin666@users.noreply.github.com>  Wed, 28 Oct 2026 13:00:00 +0000
