@@ -84,6 +84,13 @@ check("no debug root shell in boot entries", not re.search(
     r"(?:init|rdinit)=/(?:usr/)?(?:s?bin)/(?:ba)?sh|systemd.debug_shell|rd.break", grub
 ))
 check("AppArmor not disabled at boot", not re.search(r"apparmor=0|security=none", grub))
+for parameter in ("mitigations=auto,nosmt", "slab_nomerge", "init_on_alloc=1"):
+    check(f"inherited boot hardening: {parameter}", parameter in grub)
+if len(sys.argv) > 3:
+    iso_boot = active(Path(sys.argv[3]).read_text())
+    check("ISO does not load SMBIOS debug arguments", "dm_smbios_extra" not in iso_boot)
+    for parameter in ("mitigations=auto,nosmt", "slab_nomerge", "init_on_alloc=1"):
+        check(f"ISO live boot hardening: {parameter}", parameter in iso_boot)
 
 apt_config = []
 for path in guest_path("/etc/apt").rglob("*"):

@@ -20,12 +20,16 @@ def run(*args):
 
 
 mounted = False
+audit_args = []
 try:
     if target == "iso":
         squash = scratch / "filesystem.squashfs"
         run("xorriso", "-osirrox", "on", "-indev", image, "-extract", "/live/filesystem.squashfs", squash)
         run("sudo", "unsquashfs", "-no-progress", "-d", root, squash)
         run("xorriso", "-indev", image, "-report_el_torito", "plain")
+        iso_config = report / "iso-boot-config.cfg"
+        run("xorriso", "-osirrox", "on", "-indev", image, "-extract", "/boot/grub/config.cfg", iso_config)
+        audit_args.append(iso_config)
         boot_image = image
     else:
         run("./ci/audit-ova.py", image, scratch)
@@ -35,7 +39,7 @@ try:
         run("sudo", "env", "LIBGUESTFS_BACKEND=direct", "guestmount", "--ro",
             "--format=vmdk", "-a", boot_image, "-i", root)
         mounted = True
-    run("sudo", "./ci/audit-rootfs.py", root, report)
+    run("sudo", "./ci/audit-rootfs.py", root, report, *audit_args)
     with (report / "debian-vulnerability-report.txt").open("w") as vulnerabilities:
         subprocess.run(["sudo", "debsecan", "--suite", "trixie", "--status",
                         str(root / "var/lib/dpkg/status"), "--format", "detail"],
