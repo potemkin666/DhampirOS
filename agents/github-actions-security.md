@@ -77,3 +77,7 @@ are mutable.
   ```
 - Multi-arch index digest. Used by both `local-lint.yml` and
   `local-build-dry-run.yml`; bump both call sites in lockstep.
+
+`local-artwork.yml` also uses this Debian digest and the checkout v6.0.2
+pin above. It runs only the standalone artwork checks and package build;
+it does not initialize or execute derivative-maker submodules.

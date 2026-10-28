@@ -17,6 +17,5 @@ override_dh_auto_install:
 	mkdir -p debian/dhampiros-artwork
 	@if [ -f assets/rootfs-overlay.tar.gz ]; then \
 		tar --extract --gzip --file=assets/rootfs-overlay.tar.gz --directory=debian/dhampiros-artwork; \
-	else \
-		cp -a assets/source-rootfs/. debian/dhampiros-artwork/; \
 	fi
+	cp -a assets/source-rootfs/. debian/dhampiros-artwork/

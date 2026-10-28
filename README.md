@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="showcase/assets/dhampiros-minimal.svg" alt="DhampirOS Nocturne wallpaper" width="100%" />
+<img src="showcase/assets/wallpapers/rider.webp" alt="Rainbound Hunter, original DhampirOS artwork" width="100%" />
 
 <br>
 
@@ -10,7 +10,9 @@
 
 **A hardened Kicksecure derivative dressed for the night.**
 
-<a href="https://potemkin666.github.io/DhampirOS/"><b>✦ OPEN THE VISUAL DESIGN CATALOGUE ✦</b></a>
+<a href="https://potemkin666.github.io/DhampirOS/#icons"><b>✦ EXPLORE THE INTERACTIVE DESKTOP ✦</b></a>
+
+<sub>Move windows, browse Files, change the wallpaper and explore the login, setup and icon previews. Original project artwork with a quiet 24-second motion loop. Pre-alpha visual study.</sub>
 
 <br><br>
 
@@ -26,7 +28,7 @@
 
 ## Boot identity
 
-<img src="showcase/assets/boot-screen-concept.svg" alt="DhampirOS Nocturne boot concept from the supplied asset pack" width="96%" />
+<img src="showcase/assets/nocturne-boot-concept.svg" alt="DhampirOS Nocturne boot concept" width="96%" />
 
 <sub>Supplied design asset. Concept artwork, not a runtime screenshot.</sub>
 

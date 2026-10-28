@@ -1,6 +1,6 @@
-# DhampirOS by potemkin - source-only GRUB fallback theme.
-# The full binary artwork pack may replace this with raster assets.
+# DhampirOS by potemkin - artwork-only GRUB theme; uses existing menu entries.
 title-text: ""
+desktop-image: "background.png"
 desktop-color: "#090C13"
 terminal-border: "1"
 + boot_menu {
@@ -16,6 +16,7 @@ terminal-border: "1"
   icon_width = 24
   icon_height = 24
   item_icon_space = 14
+  selected_item_pixmap_style = "selected_*.png"
 }
 + label {
   left = 10%
@@ -23,7 +24,7 @@ terminal-border: "1"
   width = 80%
   height = 6%
   color = "#A7B4C9"
-  text = ""
+  text = "@KEYMAP_SHORT@"
 }
 + progress_bar {
   id = "__timeout__"
