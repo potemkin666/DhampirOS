@@ -41,6 +41,10 @@ with tarfile.open(appliance, "r:") as archive:
     descriptor = ET.fromstring(descriptor_bytes)
     local_name = lambda element: element.tag.rsplit("}", 1)[-1]
     check("one virtual system", sum(local_name(el) == "VirtualSystem" for el in descriptor.iter()) == 1)
+    memory = [int(el.attrib["RAMSize"]) for el in descriptor.iter() if local_name(el) == "Memory"]
+    processors = [int(el.attrib.get("count", "1")) for el in descriptor.iter() if local_name(el) == "CPU"]
+    check("bounded declared VM resources", len(memory) == len(processors) == 1 and
+          1024 <= memory[0] <= 8192 and 1 <= processors[0] <= 8)
     manifest = archive.extractfile(manifests[0]).read().decode("ascii")
     entries = re.findall(r"^(SHA1|SHA256|SHA512)\s*\((.+)\)\s*=\s*([0-9a-fA-F]+)\s*$", manifest, re.M)
     check("manifest covers descriptor and disk", {entry[1] for entry in entries} == {descriptors[0], disks[0]})
@@ -79,5 +83,7 @@ with tarfile.open(appliance, "r:") as archive:
         import shutil
         shutil.copyfileobj(source, destination)
 
-(output / "ova-audit.json").write_text(json.dumps({"status": "passed", "checks": checks}, indent=2) + "\n")
+(output / "ova-audit.json").write_text(json.dumps({
+    "status": "passed", "checks": checks, "memory_mib": memory[0], "processors": processors[0],
+}, indent=2) + "\n")
 print(f"OVA archive and integration checks passed ({len(checks)} checks)")

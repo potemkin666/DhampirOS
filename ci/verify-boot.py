@@ -14,13 +14,17 @@ from PIL import Image
 image = Path(sys.argv[1]).resolve()
 target = sys.argv[2]
 report = Path(sys.argv[3]).resolve()
+resources = {"memory_mib": 3072, "processors": 2}
+if target == "virtualbox":
+    resources = json.loads((report / "ova-audit.json").read_text())
 
 for firmware in ("bios", "uefi"):
     evidence = report / firmware
     evidence.mkdir()
     qmp_path = evidence / "qmp.sock"
     command = ["qemu-system-x86_64", "-machine", "q35,accel=tcg", "-cpu", "max",
-               "-m", "3072", "-smp", "2", "-nic", "none", "-display", "none",
+               "-m", str(resources["memory_mib"]), "-smp", str(resources["processors"]),
+               "-nic", "none", "-display", "none",
                "-qmp", f"unix:{qmp_path},server=on,wait=off", "-no-reboot", "-snapshot",
                "-serial", f"file:{evidence / 'serial.log'}"]
     if firmware == "uefi":

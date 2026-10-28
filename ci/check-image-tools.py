@@ -23,7 +23,7 @@ subprocess.run(["shellcheck", *shell_scripts], check=True)
 with tempfile.TemporaryDirectory(prefix="dhampiros-tool-check-") as temporary:
     scratch = Path(temporary)
     descriptor = (
-        b'<Envelope><VirtualSystem><Machine><Hardware><Network>'
+        b'<Envelope><VirtualSystem><Machine><Hardware><Memory RAMSize="2048"/><CPU count="3"/><Network>'
         b'<Adapter enabled="true"><NAT/></Adapter></Network>'
         b'<Clipboard mode="Disabled"/><DragAndDrop mode="Disabled"/>'
         b'</Hardware></Machine></VirtualSystem></Envelope>'
