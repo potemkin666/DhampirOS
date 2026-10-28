@@ -11,7 +11,7 @@ Rules-Requires-Root: no
 
 Package: dhampir-branding
 Architecture: all
-Depends: kicksecure-base-files, ${misc:Depends}
+Depends: kicksecure-base-files, ${diverted-files}, ${misc:Depends}
 Description: DhampirOS visible identity (login banner, welcome text)
  Replaces the visible Kicksecure login banner and welcome text with
  DhampirOS wording. Kicksecure security packages are not replaced.

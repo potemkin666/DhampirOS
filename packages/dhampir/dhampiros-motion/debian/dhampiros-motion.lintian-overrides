@@ -5,3 +5,6 @@ dhampiros-motion: package-contains-file-in-etc-skel [etc/skel/.config/autostart/
 dhampiros-motion: package-contains-file-in-etc-skel [etc/skel/.config/autostart/lxqt-desktop.desktop]
 dhampiros-motion: package-contains-file-in-etc-skel [etc/skel/.config/dhampiros/]
 dhampiros-motion: package-contains-file-in-etc-skel [etc/skel/.config/dhampiros/motion.conf]
+# This GUI session entry point is documented through the project's human-run
+# wiki process. AGENTS.md forbids AI-authored end-user feature documentation.
+dhampiros-motion: no-manual-page [usr/bin/dhampiros-motion]
