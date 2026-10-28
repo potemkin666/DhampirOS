@@ -33,9 +33,20 @@ with tempfile.TemporaryDirectory(prefix="dhampiros-tool-check-") as temporary:
         f"SHA256 ({name}) = {hashlib.sha256(data).hexdigest()}\n".encode()
         for name, data in (("guest.ovf", descriptor), ("guest.vmdk", disk))
     )
-    for scenario in ("valid", "traversal", "symlink", "changed-disk"):
+    for scenario in ("valid", "inactive-modes", "bridged", "forwarded", "traversal", "symlink", "changed-disk"):
         appliance = scratch / f"{scenario}.ova"
-        files = [("guest.ovf", descriptor), ("guest.vmdk", disk), ("guest.mf", manifest)]
+        scenario_descriptor = descriptor
+        if scenario == "inactive-modes":
+            scenario_descriptor = descriptor.replace(
+                b"<NAT/>", b'<DisabledModes><BridgedInterface name="eth0"/><NATNetwork/></DisabledModes><NAT/>')
+        elif scenario == "bridged":
+            scenario_descriptor = descriptor.replace(b"<NAT/>", b'<BridgedInterface name="eth0"/>')
+        elif scenario == "forwarded":
+            scenario_descriptor = descriptor.replace(b"<NAT/>", b'<NAT><Forwarding hostport="2222" guestport="22"/></NAT>')
+        scenario_manifest = manifest.replace(
+            hashlib.sha256(descriptor).hexdigest().encode(),
+            hashlib.sha256(scenario_descriptor).hexdigest().encode())
+        files = [("guest.ovf", scenario_descriptor), ("guest.vmdk", disk), ("guest.mf", scenario_manifest)]
         if scenario == "traversal":
             files.append(("../host-file", b"unacceptable"))
         if scenario == "changed-disk":
@@ -52,11 +63,11 @@ with tempfile.TemporaryDirectory(prefix="dhampiros-tool-check-") as temporary:
                 archive.addfile(link)
         result = subprocess.run(["./ci/audit-ova.py", str(appliance), str(scratch / scenario)],
                                 capture_output=True, text=True)
-        if (result.returncode == 0) != (scenario == "valid"):
+        if (result.returncode == 0) != (scenario in ("valid", "inactive-modes")):
             raise SystemExit(f"Unexpected OVA result for {scenario}: {result.stderr}")
     (scratch / "Dhampir.iso").write_bytes(b"placeholder")
     result = subprocess.run(["./ci/image-collect.py", str(scratch), "iso"], capture_output=True, text=True)
     if result.returncode == 0 or "too small" not in result.stderr:
         raise SystemExit("Placeholder image was not rejected")
 
-print("PASS: syntax, shellcheck, manifest integrity, traversal/symlink rejection, placeholder rejection")
+print("PASS: syntax, shellcheck, manifest integrity, active networking policy, traversal/symlink rejection, placeholder rejection")

@@ -57,14 +57,16 @@ with tarfile.open(appliance, "r:") as archive:
         (local_name(el) == "DeviceFilter" and el.attrib.get("active", "false").lower() == "true")
         for el in descriptor.iter()
     ))
-    check("no bridged, host-only or forwarded networking", not any(
-        local_name(el) in ("BridgedInterface", "HostOnlyInterface", "Forwarding", "NATNetwork")
-        for el in descriptor.iter()
-    ))
     adapters = [el for el in descriptor.iter() if local_name(el) == "Adapter"
                 and el.attrib.get("enabled", "false").lower() == "true"]
-    check("one enabled NAT adapter", len(adapters) == 1 and any(
-        local_name(el) == "NAT" for el in adapters[0].iter()
+    # VirtualBox preserves inactive alternatives inside DisabledModes. Only a
+    # direct mode child of an enabled adapter selects its active connection.
+    active_modes = [el for adapter in adapters for el in adapter
+                    if local_name(el) != "DisabledModes"]
+    check("one enabled NAT adapter", len(adapters) == len(active_modes) == 1 and
+          local_name(active_modes[0]) == "NAT")
+    check("no active port forwarding", not any(
+        local_name(el) == "Forwarding" for mode in active_modes for el in mode.iter()
     ))
     for feature in ("Clipboard", "DragAndDrop"):
         nodes = [el for el in descriptor.iter() if local_name(el) == feature]
