@@ -1,74 +1,74 @@
+<div align="center">
+
+<img src="packages/dhampir/dhampiros-artwork/assets/source-rootfs/usr/share/backgrounds/dhampiros/dhampiros-minimal.svg" alt="DhampirOS wallpaper" width="100%">
+
+<br>
+
+<img src="packages/dhampir/dhampiros-artwork/assets/source-rootfs/usr/share/dhampiros/brand/dhampiros-sigil.svg" alt="DhampirOS sigil" width="128">
+
 # DhampirOS
 
-DhampirOS is a hardened Linux distribution based on **Kicksecure**, which is itself based on **Debian**. Its short name is **Dhampir**.
+**A hardened Kicksecure derivative dressed for the night.**
 
-The visual theme is inspired by *Vampire Hunter D*: gothic, restrained, dark, with silver, ivory and oxblood accents.
+<br>
 
-> DhampirOS is an independent project. It is not made by, and not endorsed by, the Kicksecure or Whonix developers.
+<img src="readme-assets/badges.svg" alt="Badges: Debian, Kicksecure, LXQt, VirtualBox, PRE-ALPHA unverified build" width="806">
 
-## Core rule: keep the hardening
+<br><br>
 
-Kicksecure's security and hardening features are the reason this project exists.
+<img src="readme-assets/architecture.svg" alt="Architecture: Debian, then Kicksecure hardening, then DhampirOS packages, then Dhampir artwork and LXQt defaults, then Dhampir.iso and Dhampir.ova (planned)" width="480">
 
-- DhampirOS **adds** branding and configuration on top of Kicksecure.
-- Changes must **not remove or weaken** Kicksecure security features, for example kernel hardening flags, sandboxing, firewall rules, or package hardening.
-- Where possible, Dhampir-specific code lives in its own files (for example `*.dhampir` files and `packages/dhampir-branding/`), so upstream files stay intact and easy to compare.
+<br><br>
 
-## What it is built from
+<img src="readme-assets/palette.svg" alt="DhampirOS Nocturne colour palette" width="100%">
 
-This repository is a fork of [`derivative-maker`](https://github.com/Kicksecure/derivative-maker), the official Kicksecure build tool. `derivative-maker` is the program that turns Debian packages into a bootable image. DhampirOS uses it, and adds its own layer on top.
+<br><br>
 
-Layers, from bottom to top:
+<table>
+  <tr>
+    <th>HARDENED BASE</th>
+    <th>DHAMPIR LXQT</th>
+    <th>CUSTOM ARTWORK</th>
+  </tr>
+  <tr>
+    <td><b>Kicksecure</b></td>
+    <td><b>Nocturne</b></td>
+    <td><b>GRUB / icons / wallpaper</b></td>
+  </tr>
+  <tr>
+    <td>Upstream hardening, left unchanged.</td>
+    <td>Dark desktop and terminal defaults for new users.</td>
+    <td>Dhampir artwork shipped as one Debian package.</td>
+  </tr>
+</table>
 
-```
-Debian
-  ↓
-Kicksecure packages and hardening (upstream, unchanged)
-  ↓
-Dhampir branding and configuration (this repository)
-  ↓
-later: custom Dhampir kernel
-  ↓
-Dhampir.iso  and  Dhampir.ova
-```
+<br><br>
 
-## Planned outputs
+</div>
 
-- **`Dhampir.iso`**: a bootable image you can write to a USB stick or boot in a VM.
-- **`Dhampir.ova`**: a ready-to-import VirtualBox appliance.
+## Status
 
-Build outputs are **not** stored in Git. They will be published as GitHub Release assets. See [agents/BUILD.md](agents/BUILD.md) for how the builds work.
+- ✓ Dhampir derivative flavour
+- ✓ Dhampir artwork Debian package
+- ✓ LXQt defaults
+- ✓ icon theme
+- ✓ wallpaper
+- ✓ QTerminal palette
+- ◇ GRUB theme installed but not yet enabled by default
+- ◇ OVA not yet built
+- ◇ ISO not yet built
+- ◇ custom kernel not started
 
-## Repository layout
+✓ = implemented in this repository. Nothing has been runtime-tested yet.
 
-| Path | What it holds |
-|---|---|
-| `derivative-maker` | The build program (inherited from upstream). |
-| `branding/` | Names, colours and text used for the Dhampir identity. |
-| `config/` | Build settings for Dhampir (overlay, not upstream edits). |
-| `packages/dhampir-branding/` | A package with the visible Dhampir identity files. |
-| `kernel/` | Placeholder for future kernel work. Empty for now. |
-| `agents/` | Notes for AI coding agents and build reference, such as [agents/BUILD.md](agents/BUILD.md). See `AGENTS.md`. |
+Build details: [agents/BUILD.md](agents/BUILD.md)
 
-## Current status
+---
 
-**Phase 1 (in progress): setup and branding only.**
+<div align="center">
 
-- [x] Repository structure defined.
-- [ ] `dhampir-branding` package: started.
-- [ ] Build settings for a `dhampir` flavor in `derivative-maker`.
-- [ ] First `Dhampir.iso` built and tested.
-- [ ] First `Dhampir.ova` built and tested.
-- [ ] Custom kernel: **not started** and out of scope for Phase 1.
+<sub>DhampirOS is an independent project, not made or endorsed by the Kicksecure or Whonix developers.</sub>
+<br>
+<sub>Code: AGPL-3.0-or-later, see [COPYING](COPYING). Upstream files keep their own licences.</sub>
 
-Nothing in this repository has been built into an ISO or OVA yet. Do not treat any statement here as tested unless it says so.
-
-## Further reading
-
-- [agents/BUILD.md](agents/BUILD.md): how the ISO and OVA builds work, in plain language.
-- `README.mediawiki`: the upstream `derivative-maker` documentation.
-- `AGENTS.md`: rules for contributors and AI agents.
-
-## Licence
-
-See [COPYING](COPYING). Upstream files keep their original licences.
+</div>
