@@ -93,6 +93,13 @@ try:
                           DHAMPIROS_MOTION_DEBUG='1',
                           WLR_LIBINPUT_NO_DEVICES='1', WLR_HEADLESS_OUTPUTS='1',
                           DBUS_SYSTEM_BUS_ADDRESS=os.environ['DBUS_SESSION_BUS_ADDRESS'])
+        # D-Bus was started by runuser before this private test home existed.
+        # Its activated dconf service must use the same disposable profile.
+        Gio.bus_get_sync(Gio.BusType.SESSION, None).call_sync(
+            'org.freedesktop.DBus', '/org/freedesktop/DBus', 'org.freedesktop.DBus',
+            'UpdateActivationEnvironment', GLib.Variant('(a{ss})', ({
+                'HOME': str(home), 'XDG_CONFIG_HOME': str(config), 'XDG_RUNTIME_DIR': str(runtime)},)),
+            None, Gio.DBusCallFlags.NONE, 1000, None)
         launch([str(Path(__file__).with_name('motion-session-fixture.py'))])
         compositor = launch(['labwc', '--config-dir', str(config / 'labwc')])
         until(lambda: bool([p for p in runtime.glob('wayland-*') if p.is_socket()]))
@@ -114,6 +121,7 @@ try:
         assert status()['manager_pid'] == owner and len(player_pids()) == 1
         until(lambda: status().get('completed_loops', 0) >= 1, seconds=50)
         resources = status()
+        (evidence / 'resources-after-loop.json').write_text(json.dumps(resources, indent=2))
         # Exercise actual compositor occlusion separately from the logind
         # fixture, without changing system authentication or a real screen lock.
         lock_client = subprocess.Popen([str(Path(__file__).with_name('motion-lock-fixture.py'))],

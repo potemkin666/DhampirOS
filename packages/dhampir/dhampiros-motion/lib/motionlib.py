@@ -163,6 +163,11 @@ class SessionPolicy:
 
     def read(self):
         Gio, GLib = self.Gio, self.GLib
+        context = GLib.MainContext.default()
+        for _ in range(16):
+            if not context.pending():
+                break
+            context.iteration(False)
         try:
             result = self.system.call_sync('org.freedesktop.login1', self.path,
                                           'org.freedesktop.DBus.Properties', 'GetAll',
