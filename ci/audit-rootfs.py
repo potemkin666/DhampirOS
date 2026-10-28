@@ -198,9 +198,14 @@ for home in ("/root", "/home"):
     check(f"no pre-authorized SSH access in {home}", not any(
         read("/" + str(path.relative_to(root))).strip() for path in paths
     ))
-    for credential in (".git-credentials", ".netrc", "id_rsa", "id_ed25519"):
+    for credential in (".git-credentials", ".netrc", "id_rsa", "id_ed25519", "secring.gpg", "keyname.sec"):
         check(f"no builder credential {home}/{credential}", not any(
             guest_path(home).rglob(credential)
+        ))
+    for key_store in ("private-keys-v1.d", "sequoia/keystore", "sq/keystore"):
+        stores = guest_path(home).rglob(key_store)
+        check(f"no private signing-key store in {home}: {key_store}", not any(
+            file.is_file() for store in stores for file in store.rglob("*")
         ))
 
 report = {
