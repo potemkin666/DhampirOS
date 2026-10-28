@@ -137,7 +137,8 @@ def boot():
     version = run("VBoxManage", "--version").strip()
     (REPORT / "import.log").write_text(run(
         "VBoxManage", "import", str(APPLIANCE), "--vsys", "0", "--vmname", name,
-        "--basefolder", str(SCRATCH / "machines")))
+        "--basefolder", str(SCRATCH / "machines"), "--eula", "accept",
+        "--settingsfile", str(SCRATCH / "machines" / name / f"{name}.vbox")))
     started = False
     try:
         # Preserve declared CPU, RAM, graphics and storage. Disable host-facing
@@ -150,7 +151,15 @@ def boot():
         run("VBoxManage", "modifyvm", name, *options)
         information = run("VBoxManage", "showvminfo", name, "--machinereadable")
         (REPORT / "vm-before-boot.txt").write_text(information)
-        config = dict(re.findall(r'^([^=\n]+)="([^"\n]*)"$', information, re.M))
+        config = {}
+        for line in information.splitlines():
+            key, separator, value = line.partition("=")
+            if separator:
+                config[key] = value.strip('"')
+        declared = json.loads((REPORT / "ova-audit.json").read_text())
+        if (config.get("memory") != str(declared["memory_mib"]) or
+                config.get("cpus") != str(declared["processors"])):
+            raise RuntimeError("Imported appliance resources changed")
         for number in range(1, 9):
             if config.get(f"nic{number}") != "none":
                 raise RuntimeError("A network interface remains enabled")
