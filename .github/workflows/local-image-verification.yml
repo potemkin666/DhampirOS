@@ -14,6 +14,9 @@ on:
       - 'ci/verify-*.py'
       - 'ci/audit-*.py'
       - 'ci/image-*.sh'
+      - 'ci/check-image-packages.sh'
+      - 'packages/dhampir/**'
+      - 'patches/dhampir-*.patch'
 
 permissions:
   contents: read

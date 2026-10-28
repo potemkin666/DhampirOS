@@ -7,6 +7,9 @@ on:
     paths:
       - '.github/workflows/local-images.yml'
       - 'ci/image-*.sh'
+      - 'ci/check-image-packages.sh'
+      - 'packages/dhampir/**'
+      - 'patches/dhampir-*.patch'
 
 permissions:
   contents: read

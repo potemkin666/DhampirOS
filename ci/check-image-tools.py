@@ -16,8 +16,9 @@ for pattern in ("image-*.py", "audit-*.py", "verify-*.py", "check-image-tools.py
         ast.parse(script.read_text())
 for workflow in Path(".github/workflows").glob("local-image*.yml"):
     yaml.safe_load(workflow.read_text())
-subprocess.run(["bash", "-n", "ci/image-host.sh", "ci/image-container.sh"], check=True)
-subprocess.run(["shellcheck", "ci/image-host.sh", "ci/image-container.sh"], check=True)
+shell_scripts = ["ci/image-host.sh", "ci/image-container.sh", "ci/check-image-packages.sh"]
+subprocess.run(["bash", "-n", *shell_scripts], check=True)
+subprocess.run(["shellcheck", *shell_scripts], check=True)
 
 with tempfile.TemporaryDirectory(prefix="dhampiros-tool-check-") as temporary:
     scratch = Path(temporary)
