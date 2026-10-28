@@ -17,7 +17,7 @@ import tempfile
 
 SHARE = Path('/usr/share/dhampiros')
 STILL = Path('/usr/share/backgrounds/dhampiros/nocturne-rider.jpg')
-TRANSPARENT = SHARE / 'motion/transparent.svg'
+TRANSPARENT = SHARE / 'motion/transparent.png'
 VIDEOS = {'full': SHARE / 'motion/nocturne-rider-1080p.webm',
           'light': SHARE / 'motion/nocturne-rider-720p-light.webm'}
 PROFILE = 'dhampiros-motion'

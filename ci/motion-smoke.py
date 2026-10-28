@@ -59,7 +59,9 @@ def player_pids():
 def capture(name):
     output = evidence / f'{name}.png'
     subprocess.run(['grim', str(output)], check=True, timeout=8)
-    return Image.open(output).convert('RGB').tobytes()
+    image = Image.open(output).convert('RGB')
+    assert len(set(image.getdata())) > 1000, 'Missing wallpaper: the native desktop is nearly blank'
+    return image.tobytes()
 
 
 def session_state(active, locked):

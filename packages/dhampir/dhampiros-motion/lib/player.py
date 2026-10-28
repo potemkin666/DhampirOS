@@ -35,6 +35,7 @@ def main():
     windows, stacks = [], []
     frame_times = {}
     paused_hidden = False
+    announced = False
 
     def element(name):
         result = Gst.ElementFactory.make(name)
@@ -67,6 +68,7 @@ def main():
         return GLib.SOURCE_REMOVE
 
     def message(_bus, event):
+        nonlocal announced
         if event.type == Gst.MessageType.EOS:
             if not pipeline.seek_simple(Gst.Format.TIME, Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, 0):
                 print('failed', flush=True)
@@ -80,6 +82,9 @@ def main():
         elif event.type == Gst.MessageType.ASYNC_DONE:
             for stack in stacks:
                 stack.set_visible_child_name('video')
+            if not announced:
+                announced = True
+                print('ready', flush=True)
 
     def painted(clock):
         nonlocal paused_hidden
@@ -177,7 +182,6 @@ def main():
     GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, quit_player)
     if pipeline.set_state(Gst.State.PLAYING) == Gst.StateChangeReturn.FAILURE:
         return 1
-    GLib.idle_add(lambda: (print('ready', flush=True), GLib.SOURCE_REMOVE)[1])
     try:
         Gtk.main()
     finally:
