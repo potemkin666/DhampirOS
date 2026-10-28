@@ -66,6 +66,31 @@ on first boot. Verify its enabled service, exact stable-codename arguments,
 unconsumed initializer marker, and pinned initializer/generator/key bytes.
 Do not mistake the missing pre-boot sources file for disabled updates.
 
+The first successful image candidates are not a release: their initial
+accounts retained upstream visual defaults. The image-only
+`4305_apply-dhampir-visual-defaults` step runs after account setup and changes
+only named visual INI keys and the desktop-module autostart entry. It is not
+a package maintainer script and never runs during installed-system upgrades.
+The finished-image audit now requires the initial account profiles as well as
+the installed theme resources. Both `user` and `sysmaint` retain upstream
+authentication and session policy.
+
+Debsecan compares Tor's vendor revision `0.4.9.14-1~d13.trixie+1` with sid's
+`0.4.9.14-1`. The upstream 0.4.9.14 changelog explicitly fixes
+TROVE-2026-062, TROVE-2026-064 and TROVE-2026-067. The narrow assessment requires
+that exact installed version, exactly those three fixable findings, and the
+installed upstream changelog proof. New findings, older versions and missing
+proof remain blocked. Raw tracker findings are always retained; other upstream
+findings are not silently waived. This is an isolated-VM experimental alpha,
+not a production-security claim.
+
+Boot captures probe unprivileged KVM and otherwise use TCG. Independent BIOS
+and UEFI guests may run concurrently only within the runner memory guard.
+Software-emulated live ISO boots get a longer observation window and 4 GiB
+RAM; appliance tests retain the declared appliance resources. Review the
+actual `desktop-capture.png` and `boot-environment.json`; a completed capture
+command alone does not prove a working desktop.
+
 BIOS and UEFI QEMU boots have no network, use snapshot disks and capture
 screens without enabling root serial login. The screenshots require actual
 review. `review-status.json` explicitly says this; it is not a release
