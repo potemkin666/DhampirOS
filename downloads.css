@@ -18,4 +18,9 @@
 .download-assurance{display:flex;gap:22px;flex-wrap:wrap;padding:19px 0;border-bottom:1px solid #2b3546;color:#acb9ca;font-size:12px}
 .download-assurance a,.download-build-link{color:#afcbe1;text-underline-offset:4px}
 .download-scope{max-width:830px;color:var(--muted);font-size:12px;line-height:1.8;margin-top:18px}
+.release-capture{margin:24px 0;color:#afcbe1;font-size:12px}
+.release-capture summary{cursor:pointer;text-underline-offset:4px}
+.release-capture figure{max-width:960px;margin:18px 0}
+.release-capture img{display:block;width:100%;height:auto;border:1px solid #344157;border-radius:6px}
+.release-capture figcaption{margin-top:10px;color:var(--muted);font-size:11px;line-height:1.7}
 @media(max-width:700px){.download-grid{grid-template-columns:1fr}.download-card{padding:26px}.download-assurance{gap:16px}}

@@ -27,7 +27,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-      - name: Validate reviewed evidence and publish the experimental files
+      - name: Validate reviewed evidence and stage the experimental files
         env:
           GH_TOKEN: ${{ github.token }}
         run: ./ci/publish-image-release.py
