@@ -25,6 +25,7 @@ if target == "virtualbox":
 # A runner without usable KVM keeps the slower software-emulation lane.
 accelerator = "tcg"
 cpu = "max"
+probe_error = ""
 try:
     probe = subprocess.run([
         "qemu-system-x86_64", "-machine", "q35,accel=kvm", "-cpu", "host",
@@ -33,8 +34,10 @@ try:
         text=True, capture_output=True, timeout=15, check=False)
     if probe.returncode == 0:
         accelerator, cpu = "kvm", "host"
+    else:
+        probe_error = probe.stderr[-2000:]
 except subprocess.TimeoutExpired:
-    pass
+    probe_error = "KVM startup probe timed out"
 captures = (20, 90, 240) if accelerator == "kvm" else (
     (20, 90, 240, 480, 720) if target == "iso" else (20, 90, 240, 480))
 physical_mib = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES") // 1024**2
@@ -44,6 +47,7 @@ stop = threading.Event()
     "accelerator": accelerator, "cpu_model": cpu, "capture_seconds": captures,
     "memory_mib": resources["memory_mib"], "processors": resources["processors"],
     "parallel_firmwares": workers,
+    "kvm_probe_error": probe_error,
     "network": "disabled", "disk_writes": "disposable snapshot",
 }, indent=2) + "\n")
 
