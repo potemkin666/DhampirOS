@@ -26,17 +26,22 @@ Existing custom desktop loaders are never overwritten by the enable helper.
 
 The session-owned manager starts one GTK3 layer-shell background process
 before PCManFM creates its desktop surface. GStreamer uses an explicit
-`filesrc -> matroskademux -> vp9dec -> videoconvert` pipeline with bounded
-queues and one decoder shared across outputs. There are no URL inputs,
+`filesrc -> matroskademux -> vp9dec -> videoconvert -> appsink` pipeline.
+Its one-sample sink and one pending GTK redraw share the newest RGB frame
+across outputs, with no growing frame queue. GTK/Cairo draws that frame on
+the background surface. There are no URL inputs,
 network sources, audio elements, ambient sound or user-supplied commands.
 GTK layer-shell is packaged by Debian trixie; no new compositor is introduced.
 
 PCManFM 2.1 or newer supports a transparent wallpaper over another Wayland
 background app. A dedicated `dhampiros-motion` profile starts from the user's
-LXQt settings and keeps its own later changes. The regular `lxqt` profile
-is preserved. The underlay never takes keyboard or pointer input. When
+LXQt settings and desktop icon layouts and keeps its own later changes.
+The regular `lxqt` profile is preserved. The underlay never takes keyboard
+or pointer input. When
 starting motion after the desktop exists, only its desktop surface is
 re-mapped above the video; file-manager windows remain in the same process.
+Qt Wayland, SVG and layer-shell plugins are explicit runtime dependencies.
+The transparent underlay is a PNG, so its alpha does not depend on SVG loading.
 
 Backend detection requires Wayland, a Wayland display and the labwc desktop
 identity. The child also checks actual layer-shell support. Other sessions,
@@ -71,15 +76,20 @@ retained rather than adding effects or another compositor.
 
 The manager reads logind Active/LockedHint/Remote values. Unknown visibility,
 inactive and locked sessions retain the still and stop the player. GTK frame
-callback inactivity also pauses decoding when all outputs are obscured;
-occasional still redraws let it resume when visible. This depends on the
-compositor's callback behaviour and requires native lock validation.
+callback inactivity also releases the decoder when all outputs are obscured;
+occasional still redraws let it restart when visible, outside the GTK paint
+callback. The headless protocol-lock test exercises this separately from
+the logind fixture. Real greetd/PAM lock and physical outputs remain separate
+validation targets.
 
 Locks in the user-owned XDG runtime directory prevent duplicate managers and
 players. The controller owns only its own child process groups. SIGTERM and
 logout close them; the player watches its control pipe and restores the
-native still if the manager dies abruptly. Decoder thread count is two,
-priority is lowered, and auto mode falls back after sustained CPU use over
+native still if the manager dies abruptly. A replacement controller can reattach to its surviving
+PCManFM process using a user-private lease checked against UID, command line,
+process group and process start time, preserving open file-manager windows.
+Decoder thread count is two, priority is lowered, and auto mode falls back
+after sustained CPU use over
 half one core or RSS over 384 MiB. A light player exceeding the same budget
 falls back to static. These are conservative runtime guardrails, not measured
 hardware guarantees.
@@ -113,15 +123,37 @@ two runtime payloads into a disposable Debian container. Its unprivileged
 headless labwc smoke uses actual GTK layer-shell, GStreamer, PCManFM and
 screenshots, with an explicitly labelled private-bus logind fixture.
 
-Native smoke results are pending the first CI run. No actual DhampirOS boot,
-encrypted boot, greetd login/logout, physical GPU, monitor hotplug or genuine
-screen-lock success has been established by this implementation session.
+Reference run [40683699961](https://github.com/potemkin666/DhampirOS/actions/runs/40683699961)
+passed on 2026-10-28 at runtime commit `bc9191c`:
+
+- All three changed Debian source packages built from a clean Git archive,
+  producing artwork, motion and two GUI meta-package binaries.
+- Native screenshots changed while playing and stayed identical in Reduced.
+  A complete 24-second loop finished; Off left no wallpaper player.
+- Duplicate launches retained one owner/player. Lock and inactive logind
+  hints stopped it. Existing GNOME accessibility reduction stopped playback
+  and restoring that preference restarted it.
+- An actual ext-session-lock surface on headless labwc stopped decoding;
+  native screenshots changed again after unlock. This is a compositor
+  protocol test, not a PAM or greetd authentication test.
+- Killing the owner restored the still and removed its player. A replacement
+  owner reattached to the same PCManFM PID; normal shutdown cleaned up.
+- Auto quality selected the 720p fallback under the software-rendering CPU
+  budget. After a completed loop, one sample was 14.71% of one CPU core and
+  87.63 MiB player RSS. The three-second locked sample used 0.0% of one core.
+  These are CI observations, not promises about physical hardware.
+
+The workflow artifact contains the four Debian packages, raw resource JSON
+and native screenshots. Xcursor frame tables and mode-driven theme selection
+are checked; application-specific cursor refresh still needs real LXQt testing.
+No actual DhampirOS boot, encrypted boot, greetd login/logout, physical GPU,
+monitor hotplug or real authentication-based screen lock has been verified.
 GitHub Pages remains a browser simulation and is unchanged by Phase 6.
 
 References:
 
 - https://github.com/lxqt/pcmanfm-qt/wiki#using-desktop-under-wayland
 - https://packages.debian.org/trixie/gir1.2-gtklayershell-0.1
-- https://gstreamer.freedesktop.org/documentation/gtk/GstGtkBaseSink.html
+- https://gstreamer.freedesktop.org/documentation/app/appsink.html
 - https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Settings.html
 - https://labwc.github.io/labwc-config.5.html
