@@ -29,6 +29,14 @@ export dist_build_redistributable=true
 export dist_build_sign_and_tag=true
 export dist_build_smbios_reader=false
 ./help-steps/signing-key-create
+## Apply the reviewed derivative patch before signing. Never relax or skip
+## the upstream Unicode, modeline, whitespace or clean-source gates.
+git -C packages/kicksecure/developer-meta-files apply --check "${PWD}/patches/dhampir-binary-eof.patch"
+git -C packages/kicksecure/developer-meta-files apply "${PWD}/patches/dhampir-binary-eof.patch"
+git -C packages/kicksecure/developer-meta-files add -- usr/bin/dm-check-unicode
+git -C packages/kicksecure/developer-meta-files \
+   -c "user.name=${DEBFULLNAME}" -c "user.email=${DEBEMAIL}" \
+   commit --no-gpg-sign --message 'Handle binary assets in the text EOF check'
 ./help-steps/sign-and-tag
 export dist_build_sign_and_tag=false
 

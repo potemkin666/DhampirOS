@@ -26,6 +26,7 @@ case "${1:-}" in
       mkdir --parents -- "${RUNNER_TEMP}/dhampiros-image-evidence"
       git rev-parse HEAD > "${RUNNER_TEMP}/dhampiros-image-evidence/source-commit.txt"
       git submodule status --recursive > "${RUNNER_TEMP}/dhampiros-image-evidence/source-submodules.txt"
+      sha256sum -- patches/dhampir-binary-eof.patch > "${RUNNER_TEMP}/dhampiros-image-evidence/source-patches.txt"
       ;;
    build)
       case "${IMAGE_TARGET:-}" in
@@ -36,6 +37,7 @@ case "${1:-}" in
       mkdir --parents -- artifacts
       cp -- "${RUNNER_TEMP}/dhampiros-image-evidence/source-commit.txt" artifacts/
       cp -- "${RUNNER_TEMP}/dhampiros-image-evidence/source-submodules.txt" artifacts/
+      cp -- "${RUNNER_TEMP}/dhampiros-image-evidence/source-patches.txt" artifacts/
       find "${HOME}/binary_mnt" -type f \( -name '*.iso' -o -name '*.ova' -o -name '*buildinfo*' -o -name 'dm-source-state' -o -name '*packages*' \) -print
       ./ci/image-collect.py "${HOME}/binary_mnt" "${IMAGE_TARGET}"
       ;;
