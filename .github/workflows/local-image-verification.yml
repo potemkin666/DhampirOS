@@ -18,6 +18,7 @@ on:
       - 'ci/check-image-packages.sh'
       - 'packages/dhampir/**'
       - 'patches/dhampir-*.patch'
+      - 'aptrepo_local/dhampir/**'
 
 permissions:
   contents: read

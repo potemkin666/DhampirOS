@@ -17,6 +17,9 @@ export LC_ALL=C
 [ "${CI:-}" = true ]
 package_repo_root="$(pwd -P)"
 package_scratch="$(mktemp --directory --tmpdir="${RUNNER_TEMP}" dhampiros-package-check.XXXXXXXX)"
+mkdir --parents -- "${package_scratch}/apt/conf"
+cp -- aptrepo_local/dhampir/conf/distributions "${package_scratch}/apt/conf/"
+reprepro --basedir "${package_scratch}/apt" export local
 git -c safe.directory="${package_repo_root}" archive HEAD packages/dhampir | tar --extract --directory "${package_scratch}"
 for package_name in dhampir-branding dhampir-meta-packages dhampiros-artwork dhampiros-motion; do
    cd -- "${package_scratch}/packages/dhampir/${package_name}"

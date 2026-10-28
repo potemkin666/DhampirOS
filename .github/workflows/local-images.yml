@@ -10,6 +10,7 @@ on:
       - 'ci/check-image-packages.sh'
       - 'packages/dhampir/**'
       - 'patches/dhampir-*.patch'
+      - 'aptrepo_local/dhampir/**'
 
 permissions:
   contents: read
@@ -29,7 +30,7 @@ jobs:
       - name: Bootstrap the disposable package verifier
         run: |
           apt-get update
-          apt-get install --yes --no-install-recommends git ca-certificates build-essential debhelper config-package-dev python3 lintian
+          apt-get install --yes --no-install-recommends git ca-certificates build-essential debhelper config-package-dev python3 lintian reprepro
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           persist-credentials: false
