@@ -35,6 +35,7 @@ with tarfile.open(appliance, "r:") as archive:
     manifests = [name for name in names if name.endswith(".mf")]
     disks = [name for name in names if name.endswith(".vmdk")]
     check("single VM descriptor and manifest", len(descriptors) == len(manifests) == 1 and len(disks) == 1)
+    check("only descriptor, disk and manifest packaged", len(members) == 3)
     descriptor_bytes = archive.extractfile(descriptors[0]).read()
     check("bounded XML descriptor", len(descriptor_bytes) < 2_000_000 and b"<!DOCTYPE" not in descriptor_bytes.upper())
     descriptor = ET.fromstring(descriptor_bytes)
@@ -47,6 +48,11 @@ with tarfile.open(appliance, "r:") as archive:
         actual = hashlib.file_digest(archive.extractfile(name), algorithm.lower()).hexdigest()
         check(f"manifest digest: {name}", actual == expected.lower())
     check("no host shared folders", not any(local_name(el) == "SharedFolder" for el in descriptor.iter()))
+    check("no host device passthrough or automatic USB filters", not any(
+        local_name(el) == "HostDrive" or
+        (local_name(el) == "DeviceFilter" and el.attrib.get("active", "false").lower() == "true")
+        for el in descriptor.iter()
+    ))
     check("no bridged, host-only or forwarded networking", not any(
         local_name(el) in ("BridgedInterface", "HostOnlyInterface", "Forwarding", "NATNetwork")
         for el in descriptor.iter()
