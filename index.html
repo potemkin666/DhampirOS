@@ -12,12 +12,14 @@
   <link rel="preload" as="image" href="showcase/assets/wallpapers/rider.webp">
   <link rel="stylesheet" href="pages.css"><link rel="stylesheet" href="showcase.css">
   <script src="showcase.js" defer></script>
+  <link rel="stylesheet" href="downloads.css">
+  <script src="downloads.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#icons">Skip to the desktop preview</a>
   <header class="site-header">
     <a class="brand" href="#top" aria-label="DhampirOS home"><img src="showcase/assets/brand/dhampiros-sigil.svg" alt=""><span>DhampirOS<small>by potemkin</small></span></a>
-    <nav aria-label="Main navigation"><a href="#icons">Explore</a><a href="#artwork">Artwork</a><a href="#identity">Identity</a><a href="https://github.com/potemkin666/DhampirOS" target="_blank" rel="noopener noreferrer">Source ↗</a></nav>
+    <nav aria-label="Main navigation"><a href="#icons">Explore</a><a href="#downloads">Downloads</a><a href="#artwork">Artwork</a><a href="#identity">Identity</a><a href="https://github.com/potemkin666/DhampirOS" target="_blank" rel="noopener noreferrer">Source ↗</a></nav>
   </header>
   <main id="top">
     <section class="hero nocturne-hero" aria-labelledby="hero-title">
@@ -53,6 +55,34 @@
     </section>
 
     <section id="artwork" class="section artwork-section"><div class="explore-heading"><div><p class="kicker">THE WORLD BEHIND THE WINDOWS</p><h2>Four ways to meet the night.</h2></div><p>Choose a scene to see it<br>on the desktop above.</p></div><div class="wallpaper-gallery" id="wallpaper-gallery"><figure><img src="showcase/assets/wallpapers/rider-thumb.webp" alt="Rainbound Hunter"><figcaption>Rainbound Hunter</figcaption></figure><figure><img src="showcase/assets/wallpapers/eclipse-thumb.webp" alt="Crimson Eclipse"><figcaption>Crimson Eclipse</figcaption></figure><figure><img src="showcase/assets/wallpapers/silver-thumb.webp" alt="Silver Nocturne"><figcaption>Silver Nocturne</figcaption></figure><figure><img src="showcase/assets/wallpapers/threshold-thumb.webp" alt="Threshold"><figcaption>Threshold</figcaption></figure></div><p class="artwork-note">Original project artwork. The rider's rain, hair, mane, cloak and grass share a restrained, seamless 24-second motion study.</p></section>
+
+    <section id="downloads" class="section download-section" aria-labelledby="download-title">
+      <p class="kicker">TAKE THE FRONTIER WITH YOU</p>
+      <h2 id="download-title">Your own half-light.</h2>
+      <p class="download-intro">The full DhampirOS desktop, built on Kicksecure. Choose a bootable image or an appliance for your virtual machine.</p>
+      <p class="download-scope" id="download-status" role="status">Experimental alpha for isolated VM testing. Read the verification report and remaining limits before use.</p>
+      <div class="download-grid">
+        <article class="download-card" data-download="iso">
+          <span class="download-kind" aria-hidden="true">.iso</span><h3>Bootable image</h3>
+          <p>Boot in a virtual machine to explore the desktop. Hardware installation support must be confirmed in the release report.</p>
+          <p class="download-meta">AMD64 / Intel &amp; AMD 64-bit PCs</p>
+          <button class="download-button" type="button" disabled>ISO awaiting verification</button>
+          <details class="download-hash" hidden><summary>SHA-256 fingerprint</summary><code></code></details>
+        </article>
+        <article class="download-card" data-download="ova">
+          <span class="download-kind" aria-hidden="true">.ova</span><h3>VirtualBox appliance</h3>
+          <p>Import a ready-made machine into VirtualBox. Review its network and device settings before the first start.</p>
+          <p class="download-meta">AMD64 / VirtualBox</p>
+          <button class="download-button" type="button" disabled>OVA awaiting verification</button>
+          <details class="download-hash" hidden><summary>SHA-256 fingerprint</summary><code></code></details>
+        </article>
+      </div>
+      <div class="download-assurance" id="download-evidence" hidden><a data-checksums>Checksums</a><a data-report>Verification report</a><a data-source>Exact source</a></div>
+      <noscript><p class="download-scope">Downloads without JavaScript: <a class="download-build-link" href="https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/DhampirOS-0.1.0-alpha.1-amd64.iso">ISO</a> · <a class="download-build-link" href="https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/DhampirOS-0.1.0-alpha.1-amd64.ova">OVA</a> · <a class="download-build-link" href="https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/SHA256SUMS">Checksums</a> · <a class="download-build-link" href="https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/verification-report.json">Verification report</a>.</p></noscript>
+      <p class="download-scope">Experimental alpha. Checksums detect changed downloads; the verification report records the checks actually performed and any remaining limits. DhampirOS is an independent derivative and has not received a security certification.</p>
+      <details class="release-capture"><summary>See the actual alpha desktop</summary><figure><img src="showcase/assets/releases/alpha1-desktop.png" alt="DhampirOS alpha ISO running its real desktop in a tested virtual machine" width="1280" height="800" loading="lazy"><figcaption>An original capture from the tested ISO, with the Dhampir artwork on the live desktop.</figcaption></figure></details>
+      <a class="download-build-link" href="https://github.com/potemkin666/DhampirOS/actions/workflows/local-images.yml" target="_blank" rel="noopener noreferrer">Follow the image builds</a>
+    </section>
 
     <section id="identity" class="section">
       <div class="heading"><span>01</span><div><p class="kicker">IDENTITY</p><h2>Marks for the half-lit machine.</h2></div></div>

@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: potemkin666 <183807833+potemkin666@users.noreply.github.com>
 Build-Depends: debhelper-compat (= 13), python3
 Standards-Version: 4.7.2
+Homepage: https://potemkin666.github.io/DhampirOS/
 Rules-Requires-Root: no
 
 Package: dhampiros-artwork

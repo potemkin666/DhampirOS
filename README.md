@@ -131,13 +131,13 @@
 |---|---|---|
 | ✓ | `dhampir-lxqt` derivative flavour | wired |
 | ✓ | `dhampiros-artwork` Debian package | builds |
-| ✓ | LXQt / icon / wallpaper / QTerminal defaults | implemented for new users |
-| ◇ | runtime visual smoke test | not yet completed |
+| ✓ | LXQt / icon / wallpaper / QTerminal defaults | initialized in the image accounts |
+| ✓ | runtime visual smoke test | native motion CI; real desktop captures reviewed |
 | ◇ | GRUB theme enabled by default | pending runtime verification |
-| ◇ | `Dhampir.ova` / `Dhampir.iso` | not yet built |
+| ✓ | AMD64 ISO / OVA | built and checked for alpha 0.1.0 |
 | ◇ | custom Dhampir kernel | not started |
 
-> **Pre-alpha.** The visuals above are real supplied project assets, but they are design resources, not evidence of a successfully booted full Dhampir image.
+> **Experimental alpha.** The full ISO and OVA reached the Dhampir desktop in network-isolated BIOS and UEFI KVM tests. These images are for isolated VM testing. Unresolved upstream tracker findings and other verification limits remain; this is not a security certification or a production-ready release.
 
 Build details live in [`agents/BUILD.md`](agents/BUILD.md). DhampirOS is an independent project based on Kicksecure/Debian and is not endorsed by the Kicksecure or Whonix developers.
 

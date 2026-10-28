@@ -11,8 +11,10 @@ override_dh_auto_build:
 	fi
 
 override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	bash tests/test-theme-paths.sh
 	./tests/test-cursors.py
+endif
 
 override_dh_auto_install:
 	mkdir -p debian/dhampiros-artwork

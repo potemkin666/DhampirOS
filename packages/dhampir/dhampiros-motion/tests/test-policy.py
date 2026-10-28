@@ -64,10 +64,7 @@ class PolicyTests(unittest.TestCase):
                 else:
                     os.environ['XDG_RUNTIME_DIR'] = previous
 
-    def test_assets_and_loader(self):
-        root = PACKAGE.parent / 'dhampiros-artwork/assets/source-rootfs'
-        for asset in [motionlib.STILL, motionlib.TRANSPARENT, *motionlib.VIDEOS.values()]:
-            self.assertTrue((root / asset.relative_to('/')).is_file(), str(asset))
+    def test_loader_contract(self):
         self.assertIn('X-LXQt-Module=true', (PACKAGE / 'data/lxqt-desktop.desktop').read_text())
         self.assertNotIn('Restart=', (PACKAGE / 'data/lxqt-desktop.desktop').read_text())
 

@@ -86,3 +86,10 @@ it does not initialize or execute derivative-maker submodules.
 upload-artifact v7.0.1 pins above. Its package extraction and headless
 desktop tests run only inside the disposable CI container, as a separate
 unprivileged user for graphical runtime checks. No upstream submodules run.
+
+**`actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6  # v4.2.2`**
+- Source: https://github.com/actions/attest/releases/tag/v4.2.2
+- Release commit: `"1e69f48acb82d1966a394da916b4c1698aa569d6"`.
+- Verified: 2026-10-28 by GitHub tag-ref API and the immutable release page.
+- Used only by owner-repository image builds, with job-scoped OIDC and
+  attestation permissions. Provenance records origin; it does not certify safety.

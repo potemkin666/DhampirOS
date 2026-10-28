@@ -2,7 +2,7 @@
 
 This page explains, in plain language, how we will build `Dhampir.iso` and `Dhampir.ova`. It lives under `agents/` because `AGENTS.md` does not allow a `docs/` directory.
 
-**Status: not yet working.** The steps below come from the upstream `derivative-maker` tool. They have not yet been run end-to-end for DhampirOS. Each step will be marked as tested here once it is.
+**Status: experimental alpha images built.** Full ISO and VirtualBox builds completed in [40751365822](https://github.com/potemkin666/DhampirOS/actions/runs/40751365822). [Independent verification 40762495912](https://github.com/potemkin666/DhampirOS/actions/runs/40762495912) passed the offline gates and produced reviewed BIOS/UEFI KVM desktop captures. See [RELEASE-IMAGES.md](RELEASE-IMAGES.md) for the exact trust boundary and publication gates. Physical hardware, Secure Boot and actual VirtualBox runtime remain unverified.
 
 ## The short version
 

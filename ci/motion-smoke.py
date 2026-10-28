@@ -18,6 +18,13 @@ import time
 from gi.repository import Gio, GLib
 from PIL import Image
 
+sys.path.insert(0, '/usr/libexec/dhampiros-motion')
+import motionlib
+
+# Asset presence belongs to installed-package integration, not source-only unit tests.
+for required_asset in [motionlib.STILL, motionlib.TRANSPARENT, *motionlib.VIDEOS.values()]:
+    assert required_asset.is_file(), str(required_asset)
+
 CLI = '/usr/bin/dhampiros-motion'
 processes = []
 evidence = Path(sys.argv[1]).resolve()

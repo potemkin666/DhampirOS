@@ -7,6 +7,7 @@ Priority: optional
 Maintainer: potemkin666 <183807833+potemkin666@users.noreply.github.com>
 Build-Depends: debhelper (>= 13), debhelper-compat (= 13)
 Standards-Version: 4.7.2
+Homepage: https://potemkin666.github.io/DhampirOS/
 Rules-Requires-Root: no
 
 ## Each binary package below pulls in the matching Kicksecure LXQt meta
@@ -20,7 +21,7 @@ Depends: kicksecure-vm-gui-lxqt,
  dhampiros-artwork,
  dhampiros-motion,
  ${misc:Depends}
-Description: DhampirOS VM with LXQt desktop (meta package)
+Description: DhampirOS VM with LXQt desktop (metapackage)
  Installs the Kicksecure LXQt VM packages with DhampirOS branding and artwork.
  Security and hardening come from the Kicksecure packages it depends on.
 
@@ -31,6 +32,7 @@ Depends: kicksecure-baremetal-gui-lxqt,
  dhampiros-artwork,
  dhampiros-motion,
  ${misc:Depends}
-Description: DhampirOS baremetal (ISO) with LXQt desktop (meta package)
- Installs the Kicksecure LXQt baremetal packages with DhampirOS branding and artwork.
+Description: DhampirOS baremetal (ISO) with LXQt desktop (metapackage)
+ Installs the Kicksecure LXQt baremetal packages with DhampirOS branding
+ and artwork.
  Security and hardening come from the Kicksecure packages it depends on.
