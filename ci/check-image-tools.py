@@ -2,8 +2,11 @@
 """AI-Assisted. Basic release tool syntax and malicious archive smoke checks."""
 
 import ast
+import gzip
 import hashlib
 import io
+import json
+import os
 from pathlib import Path
 import subprocess
 import tarfile
@@ -72,4 +75,38 @@ with tempfile.TemporaryDirectory(prefix="dhampiros-tool-check-") as temporary:
     if result.returncode == 0 or "too small" not in result.stderr:
         raise SystemExit("Placeholder image was not rejected")
 
-print("PASS: syntax, shellcheck, manifest integrity, active networking policy, traversal/symlink rejection, placeholder rejection")
+    # Toy scanner metadata checks only the narrow vendor-version assessment.
+    # This does not scan, build or approve an OS image.
+    scanner = scratch / "bin"
+    scanner.mkdir()
+    stub = scanner / "debsecan"
+    stub.write_text(
+        '#!/usr/bin/python3\nimport json,sys\nfrom pathlib import Path\n'
+        'data=json.loads((Path(__file__).parent/"data.json").read_text())\n'
+        'print("tor" if sys.argv[sys.argv.index("--format")+1]=="packages" else data["detail"])\n')
+    stub.chmod(0o755)
+    version = "0.4.9.14-1~d13.trixie+1"
+    issues = ("TROVE-2026-062", "TROVE-2026-064", "TROVE-2026-067")
+    for scenario in ("vendor-fixed", "new-finding", "old-version", "missing-proof"):
+        case = scratch / scenario
+        root, report = case / "root", case / "report"
+        document = root / "usr/share/doc/tor/changelog.gz"
+        document.parent.mkdir(parents=True)
+        report.mkdir(parents=True)
+        installed = version if scenario != "old-version" else "0.4.9.13-1~d13.trixie+1"
+        (report / "packages.json").write_text(json.dumps({"tor": installed}))
+        proof = issues if scenario != "missing-proof" else issues[:2]
+        with gzip.open(document, "wt") as output:
+            output.write("Changes in version 0.4.9.14\n" + "\n".join(proof))
+        detail = "\n\n".join(f"TEMP-fixture-{index} (fixed)\n  {issue}\n  installed: tor {installed}"
+                                for index, issue in enumerate(issues))
+        if scenario == "new-finding":
+            detail += f"\n\nCVE-2099-99999 (fixed)\n  Unreviewed fixture issue\n  installed: tor {installed}"
+        (scanner / "data.json").write_text(json.dumps({"detail": detail}))
+        environment = dict(os.environ, PATH=str(scanner) + os.pathsep + os.environ["PATH"])
+        result = subprocess.run(["./ci/audit-vulnerabilities.py", str(root), str(report)],
+                                env=environment, capture_output=True, text=True)
+        if (result.returncode == 0) != (scenario == "vendor-fixed"):
+            raise SystemExit(f"Unexpected vulnerability policy result: {scenario}: {result.stderr}")
+
+print("PASS: syntax, shellcheck, manifest integrity, active networking policy, archive safety, placeholder and unknown-vulnerability rejection")
