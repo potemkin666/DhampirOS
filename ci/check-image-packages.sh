@@ -22,6 +22,10 @@ for package_name in dhampir-branding dhampir-meta-packages dhampiros-artwork dha
    cd -- "${package_scratch}/packages/dhampir/${package_name}"
    package_version="$(dpkg-parsechangelog --show-field Version)"
    package_upstream="${package_version%-*}"
+   package_isolated="${package_scratch}/isolated/${package_name}/${package_name}-${package_upstream}"
+   mkdir --parents -- "${package_isolated}"
+   cp --archive -- ./. "${package_isolated}/"
+   cd -- "${package_isolated}"
    tar --create --xz --exclude=./debian --file="../${package_name}_${package_upstream}.orig.tar.xz" .
    dpkg-buildpackage --no-sign --build=full
    lintian --allow-root --fail-on error,warning "../${package_name}_${package_version}_amd64.changes"

@@ -11,6 +11,7 @@ on:
     branches: ['codex/downloadable-images']
     paths:
       - '.github/workflows/local-image-verification.yml'
+      - '.github/workflows/local-images.yml'
       - 'ci/verify-*.py'
       - 'ci/audit-*.py'
       - 'ci/image-*.sh'
