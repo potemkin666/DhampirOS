@@ -64,7 +64,7 @@ for kind, target in (("iso", "iso"), ("ova", "virtualbox")):
         raise SystemExit("OVA settings/manifest audit failed")
     boot_review = {}
     for firmware in ("bios", "uefi"):
-        screenshot = evidence / firmware / "boot-240.png"
+        screenshot = evidence / firmware / "desktop-capture.png"
         accepted = review[kind][firmware]
         if accepted["outcome"] != "desktop" or accepted["sha256"] != digest(screenshot):
             raise SystemExit(f"{kind}/{firmware}: desktop capture has not been reviewed")

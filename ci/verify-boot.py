@@ -14,7 +14,7 @@ from PIL import Image
 image = Path(sys.argv[1]).resolve()
 target = sys.argv[2]
 report = Path(sys.argv[3]).resolve()
-resources = {"memory_mib": 3072, "processors": 2}
+resources = {"memory_mib": 4096, "processors": 2}
 if target == "virtualbox":
     resources = json.loads((report / "ova-audit.json").read_text())
 
@@ -63,7 +63,8 @@ for firmware in ("bios", "uefi"):
 
             qmp("qmp_capabilities")
             start = time.monotonic()
-            for elapsed in (20, 90, 240):
+            captures = (20, 90, 240, 480, 720) if target == "iso" else (20, 90, 240, 480)
+            for elapsed in captures:
                 time.sleep(max(0, start + elapsed - time.monotonic()))
                 ppm = evidence / f"boot-{elapsed}.ppm"
                 qmp("screendump", {"filename": str(ppm)})
@@ -72,6 +73,9 @@ for firmware in ("bios", "uefi"):
                 ppm.unlink()
                 if elapsed == 20:
                     qmp("human-monitor-command", {"command-line": "sendkey ret"})
+                else:
+                    qmp("human-monitor-command", {"command-line": "sendkey shift"})
+            shutil.copyfile(evidence / f"boot-{captures[-1]}.png", evidence / "desktop-capture.png")
             qmp("quit")
         finally:
             connection.close()

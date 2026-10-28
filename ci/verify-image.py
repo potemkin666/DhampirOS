@@ -45,20 +45,8 @@ try:
                            check=False)
     if audit.returncode:
         failed_gates.append("offline filesystem audit")
-    with (report / "debian-vulnerability-report.txt").open("w") as vulnerabilities:
-        subprocess.run(["sudo", "debsecan", "--suite", "trixie", "--status",
-                        str(root / "var/lib/dpkg/status"), "--format", "detail"],
-                       check=True, stdout=vulnerabilities)
-    fixable = subprocess.check_output([
-        "sudo", "debsecan", "--suite", "trixie", "--status", str(root / "var/lib/dpkg/status"),
-        "--format", "packages", "--only-fixed",
-    ], text=True).splitlines()
-    (report / "security-update-gate.json").write_text(json.dumps({
-        "suite": "trixie", "packages_with_security_fixes_available": fixable,
-        "status": "failed" if fixable else "passed",
-        "scope": "Debian tracker coverage only; custom packages and unfixed findings need separate review",
-    }, indent=2) + "\n")
-    if fixable:
+    security = subprocess.run(["sudo", "./ci/audit-vulnerabilities.py", str(root), str(report)], check=False)
+    if security.returncode:
         failed_gates.append("available security fixes")
 finally:
     if mounted:

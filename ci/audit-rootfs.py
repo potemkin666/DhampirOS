@@ -6,6 +6,7 @@ This records bounded checks, not a claim of absence of vulnerabilities.
 """
 
 import hashlib
+import configparser
 import json
 from pathlib import Path
 import re
@@ -88,6 +89,18 @@ for asset in ("/usr/share/backgrounds/dhampiros/nocturne-rider.jpg",
 
 check("DhampirOS identity", "DhampirOS" in read("/etc/issue") and
       bool(read("/etc/dhampir_version").strip()))
+
+for account in ("user", "sysmaint"):
+    settings = configparser.ConfigParser(interpolation=None, strict=False)
+    settings.read_string(read(f"/home/{account}/.config/lxqt/lxqt.conf"))
+    check(f"initial {account} uses Dhampir LXQt and icons", settings.get("General", "theme", fallback="") == "DhampirOS" and
+          settings.get("General", "icon_theme", fallback="") == "DhampirOS")
+    desktop = configparser.ConfigParser(interpolation=None, strict=False)
+    desktop.read_string(read(f"/home/{account}/.config/pcmanfm-qt/lxqt/settings.conf"))
+    check(f"initial {account} has the original wallpaper", desktop.get("Desktop", "Wallpaper", fallback="") ==
+          "/usr/share/backgrounds/dhampiros/nocturne-rider.jpg")
+    check(f"initial {account} has the native desktop module", "Exec=/usr/bin/dhampiros-motion desktop" in
+          read(f"/home/{account}/.config/autostart/lxqt-desktop.desktop"))
 grub = active(read("/boot/grub/grub.cfg"))
 check("bootloader configuration exists", "menuentry" in grub)
 check("no SMBIOS command-line injection in bootloader", not re.search(

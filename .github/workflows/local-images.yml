@@ -7,6 +7,8 @@ on:
     paths:
       - '.github/workflows/local-images.yml'
       - 'ci/image-*.sh'
+      - 'ci/image-visuals.py'
+      - 'build-steps.d/4305_apply-dhampir-visual-defaults'
       - 'ci/check-image-packages.sh'
       - 'packages/dhampir/**'
       - 'patches/dhampir-*.patch'
@@ -30,12 +32,14 @@ jobs:
       - name: Bootstrap the disposable package verifier
         run: |
           apt-get update
-          apt-get install --yes --no-install-recommends git ca-certificates build-essential debhelper config-package-dev python3 lintian reprepro
+          apt-get install --yes --no-install-recommends git ca-certificates build-essential debhelper config-package-dev python3 python3-yaml lintian reprepro shellcheck
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           persist-credentials: false
       - name: Build isolated source packages and run lintian
         run: ./ci/check-image-packages.sh
+      - name: Check release tooling before starting full images
+        run: ./ci/check-image-tools.py
   build:
     needs: packages
     if: github.repository == 'potemkin666/DhampirOS'

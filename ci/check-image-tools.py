@@ -16,9 +16,11 @@ for pattern in ("image-*.py", "audit-*.py", "verify-*.py", "prepare-image-releas
         ast.parse(script.read_text())
 for workflow in Path(".github/workflows").glob("local-image*.yml"):
     yaml.safe_load(workflow.read_text())
-shell_scripts = ["ci/image-host.sh", "ci/image-container.sh", "ci/check-image-packages.sh"]
-subprocess.run(["bash", "-n", *shell_scripts], check=True)
-subprocess.run(["shellcheck", *shell_scripts], check=True)
+shell_scripts = ["ci/image-host.sh", "ci/image-container.sh", "ci/check-image-packages.sh",
+                 "build-steps.d/4305_apply-dhampir-visual-defaults"]
+for shell_script in shell_scripts:
+    subprocess.run(["bash", "-n", shell_script], check=True)
+subprocess.run(["shellcheck", "--source-path=SCRIPTDIR", *shell_scripts], check=True)
 
 with tempfile.TemporaryDirectory(prefix="dhampiros-tool-check-") as temporary:
     scratch = Path(temporary)
