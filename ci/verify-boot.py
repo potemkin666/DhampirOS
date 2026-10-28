@@ -98,7 +98,7 @@ def capture_boot(firmware):
                 ppm.unlink()
 
             def key(value):
-                qmp("human-monitor-command", {"command-line": f"sendkey {value}"})
+                qmp("human-monitor-command", {"command-line": f"sendkey {value} 40"})
 
             def type_command(command):
                 codes = {" ": "spc", "-": "minus", "/": "slash", ".": "dot", "|": "shift-backslash"}
