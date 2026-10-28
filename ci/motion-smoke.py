@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import select
 import subprocess
 import sys
 import tempfile
@@ -71,6 +72,11 @@ def session_state(active, locked):
         None, Gio.DBusCallFlags.NONE, 1000, None)
 
 
+def cpu_ticks(pid):
+    fields = Path(f'/proc/{pid}/stat').read_text().rpartition(') ')[2].split()
+    return int(fields[11]) + int(fields[12])
+
+
 try:
     with tempfile.TemporaryDirectory(prefix='dhampiros-native-') as temporary:
         home = Path(temporary)
@@ -84,6 +90,7 @@ try:
         os.environ.update(HOME=str(home), XDG_CONFIG_HOME=str(config), XDG_RUNTIME_DIR=str(runtime),
                           XDG_SESSION_TYPE='wayland', XDG_CURRENT_DESKTOP='LXQt:labwc:wlroots',
                           QT_QPA_PLATFORM='wayland', WLR_BACKENDS='headless', WLR_RENDERER='pixman',
+                          DHAMPIROS_MOTION_DEBUG='1',
                           WLR_LIBINPUT_NO_DEVICES='1', WLR_HEADLESS_OUTPUTS='1',
                           DBUS_SYSTEM_BUS_ADDRESS=os.environ['DBUS_SESSION_BUS_ADDRESS'])
         launch([str(Path(__file__).with_name('motion-session-fixture.py'))])
@@ -98,6 +105,8 @@ try:
         first = capture('native-full-1')
         time.sleep(3)
         second = capture('native-full-2')
+        (evidence / 'status-first.json').write_text(json.dumps(status(), indent=2))
+        (evidence / 'profile-first.conf').write_text((config / 'pcmanfm-qt/dhampiros-motion/settings.conf').read_text())
         assert first != second, 'Native wallpaper did not move'
         assert len(player_pids()) == 1, player_pids()
         owner = status()['manager_pid']
@@ -105,6 +114,24 @@ try:
         assert status()['manager_pid'] == owner and len(player_pids()) == 1
         time.sleep(2)
         resources = status()
+        # Exercise actual compositor occlusion separately from the logind
+        # fixture, without changing system authentication or a real screen lock.
+        lock_client = subprocess.Popen([str(Path(__file__).with_name('motion-lock-fixture.py'))],
+                                       stdout=subprocess.PIPE, text=True, start_new_session=True)
+        processes.append(lock_client)
+        assert select.select([lock_client.stdout], [], [], 5)[0] and lock_client.stdout.readline().strip() == 'locked'
+        time.sleep(8)
+        locked_pid = status()['player_pid']
+        before = cpu_ticks(locked_pid)
+        sample_time = time.monotonic()
+        time.sleep(3)
+        locked_cpu = 100 * (cpu_ticks(locked_pid) - before) / os.sysconf('SC_CLK_TCK') / (time.monotonic() - sample_time)
+        assert locked_cpu < 10, f'Decoding did not pause under the protocol lock: {locked_cpu:.2f}% of one core'
+        lock_client.wait(timeout=8)
+        time.sleep(3)
+        after_unlock = capture('native-unlocked-1')
+        time.sleep(2)
+        assert after_unlock != capture('native-unlocked-2'), 'Motion did not resume after protocol unlock'
         call('mode', 'reduced')
         until(lambda: status().get('player_pid') is None)
         time.sleep(2)
@@ -150,6 +177,7 @@ try:
         result = {'environment': 'Debian trixie, headless labwc/pixman, actual GTK layer-shell/GStreamer/PCManFM',
                   'logind': 'Private-bus fixture; actual DhampirOS login/logout and lock remain unverified',
                   'native_frames_change': True, 'reduced_frames_static': True, 'off_no_player': True,
+                  'headless_protocol_lock_pause_resume': True, 'locked_cpu_one_core_percent': round(locked_cpu, 2),
                   'duplicate_launch_one_owner': True, 'light_quality': True, 'lock_hint_stops_player': True,
                   'inactive_session_stops_player': True, 'owner_death_cleans_player': True,
                   'existing_accessibility_preference': True,

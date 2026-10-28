@@ -11,7 +11,8 @@ Architecture: all
 Depends: ${misc:Depends}, python3, python3-gi,
  gir1.2-gtk-3.0, gir1.2-gtklayershell-0.1, gir1.2-gstreamer-1.0,
  gstreamer1.0-gtk3, gstreamer1.0-plugins-base, gstreamer1.0-plugins-good,
- pcmanfm-qt (>= 2.1.0), qt6-wayland, qt6-svg-plugins, dhampiros-artwork (>= 0.4-1)
+ pcmanfm-qt (>= 2.1.0), qt6-wayland, qt6-svg-plugins, layer-shell-qt,
+ dhampiros-artwork (>= 0.4-1)
 Description: restrained native motion for the DhampirOS desktop
  Provides a session-owned local Wayland wallpaper underlay for LXQt/labwc,
  preserving PCManFM desktop icons and static fallback artwork. Includes

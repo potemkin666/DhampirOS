@@ -102,6 +102,10 @@ def main():
             pipeline.set_state(Gst.State.PAUSED)
         for window in windows:
             window.queue_draw()
+        if os.environ.get('DHAMPIROS_MOTION_DEBUG') == '1':
+            _result, current, pending = pipeline.get_state(0)
+            _ok, position = pipeline.query_position(Gst.Format.TIME)
+            print(f'dhampiros-motion: pipeline={current.value_nick} pending={pending.value_nick} position={position} hidden={paused_hidden}', file=sys.stderr)
         return GLib.SOURCE_CONTINUE
 
     source = element('filesrc')
