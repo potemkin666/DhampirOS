@@ -57,6 +57,12 @@ elif sys.argv[1] == "download":
         raise SystemExit("Candidate digest/size mismatch")
     verification = Path("verification")
     verification.mkdir()
+    attestation = json.loads(gh(
+        "attestation", "verify", str(image), "--repo", REPOSITORY,
+        "--signer-workflow", f"{REPOSITORY}/.github/workflows/local-images.yml",
+        "--source-digest", run["head_sha"], "--format", "json",
+    ))
+    (verification / "attestation-verification.json").write_text(json.dumps(attestation, indent=2) + "\n")
     (verification / "candidate-provenance.json").write_text(json.dumps({
         "run_id": run_id, "source_commit": run["head_sha"], "file": name,
         "sha256": digest, "bytes": image.stat().st_size, "build_url": run["html_url"],
