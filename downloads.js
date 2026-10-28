@@ -42,7 +42,9 @@
       hash.querySelector('code').textContent = asset.sha256;
     });
     const status = document.getElementById('download-status');
-    status.textContent = 'Experimental alpha. Read the verification report before using these images.';
+    status.textContent = release.tracker_findings_present ?
+      'Experimental images for isolated VM testing. Vulnerability tracker findings remain in the report; review them before use.' :
+      'Experimental alpha for VM testing. Read the verification report before using these images.';
     const evidence = document.getElementById('download-evidence');
     evidence.hidden = false;
     evidence.querySelector('[data-checksums]').href = sums;

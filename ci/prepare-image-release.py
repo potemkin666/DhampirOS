@@ -39,6 +39,7 @@ def load_report(root, name):
 
 
 assets = {}
+tracker_summaries = {}
 validated = []
 for kind, target in (("iso", "iso"), ("ova", "virtualbox")):
     candidate = args.candidates / f"dhampiros-{target}-candidate"
@@ -60,6 +61,17 @@ for kind, target in (("iso", "iso"), ("ova", "virtualbox")):
             raise SystemExit(f"{kind}: failed {report_name}")
     if not load_report(evidence, "attestation-verification.json"):
         raise SystemExit(f"{kind}: no verified attestation")
+    raw_findings = (evidence / "debian-vulnerability-report.txt").read_text()
+    records = [block for block in raw_findings.split("\n\n") if re.match(r"(?:CVE|TEMP)-", block)]
+    flagged_packages = {match.group(1) for block in records
+                        if (match := re.search(r"installed: (\S+)", block))}
+    tracker_summaries[kind] = {
+        "raw_finding_records": len(records),
+        "unique_tracker_advisories": len({block.splitlines()[0].split()[0] for block in records}),
+        "packages_flagged_by_tracker": len(flagged_packages),
+        "interpretation": "Version/source tracker findings; applicability is not proven for every record",
+        "available_fix_assessment": load_report(evidence, "security-update-gate.json"),
+    }
     if kind == "ova" and load_report(evidence, "ova-audit.json")["status"] != "passed":
         raise SystemExit("OVA settings/manifest audit failed")
     boot_review = {}
@@ -84,6 +96,7 @@ with zipfile.ZipFile(args.output / "DhampirOS-verification.zip", "w", zipfile.ZI
 report = {
     "version": version, "source_commit": source_commit, "status": "reviewed-experimental-alpha",
     "images": assets, "review": review,
+    "vulnerability_tracker_summary": tracker_summaries,
     "builds": [entry[3] for entry in validated],
     "checks": ["exact source and image digest", "GitHub workflow attestation",
                "offline package, update, hardening and credential checks",
@@ -98,6 +111,7 @@ report = {
 catalogue = {"schema": 1, "status": "published", "audit": "passed", "version": version,
              "source_commit": source_commit, "assets": assets,
              "checksums": release_url + "SHA256SUMS", "report": release_url + "verification-report.json"}
+catalogue["tracker_findings_present"] = any(item["raw_finding_records"] for item in tracker_summaries.values())
 (args.output / "catalogue-proposal.json").write_text(json.dumps(catalogue, indent=2) + "\n")
 published_files = [path for path in args.output.iterdir() if path.name != "catalogue-proposal.json"]
 (args.output / "SHA256SUMS").write_text("".join(

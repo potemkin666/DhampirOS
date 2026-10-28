@@ -67,6 +67,8 @@ notes.write_text(
     f"Independent verification: {verification['html_url']}\n\n"
     "Includes SHA256SUMS, a bounded verification report and an evidence archive with package "
     "inventories, vulnerability findings and reviewed BIOS/UEFI QEMU desktop captures.\n\n"
+    "For isolated VM testing. Unresolved upstream tracker findings remain in the report; "
+    "this alpha is not ready for sensitive or production workloads.\n\n"
     "Independent Kicksecure-based derivative; not an official Kicksecure release. "
     "Not a security certification or guarantee. Physical hardware, Secure Boot and actual "
     "VirtualBox runtime remain unverified. Review the report before use.\n",
