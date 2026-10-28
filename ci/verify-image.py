@@ -36,6 +36,21 @@ try:
             "--format=vmdk", "-a", boot_image, "-i", root)
         mounted = True
     run("sudo", "./ci/audit-rootfs.py", root, report)
+    with (report / "debian-vulnerability-report.txt").open("w") as vulnerabilities:
+        subprocess.run(["sudo", "debsecan", "--suite", "trixie", "--status",
+                        str(root / "var/lib/dpkg/status"), "--format", "detail"],
+                       check=True, stdout=vulnerabilities)
+    fixable = subprocess.check_output([
+        "sudo", "debsecan", "--suite", "trixie", "--status", str(root / "var/lib/dpkg/status"),
+        "--format", "packages", "--only-fixed",
+    ], text=True).splitlines()
+    (report / "security-update-gate.json").write_text(json.dumps({
+        "suite": "trixie", "packages_with_security_fixes_available": fixable,
+        "status": "failed" if fixable else "passed",
+        "scope": "Debian tracker coverage only; custom packages and unfixed findings need separate review",
+    }, indent=2) + "\n")
+    if fixable:
+        raise SystemExit("Security fixes are available for installed packages; refusing publication")
 finally:
     if mounted:
         run("sudo", "guestunmount", root)
