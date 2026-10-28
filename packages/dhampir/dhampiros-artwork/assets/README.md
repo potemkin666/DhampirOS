@@ -1,14 +1,16 @@
-# DhampirOS artwork payloads
+# DhampirOS artwork payload
 
-This package supports two artwork sources:
+`source-rootfs/` contains the full tracked artwork payload. It builds
+without downloading an asset pack or providing a binary overlay archive.
+The Rainbound Hunter still is the PCManFM-Qt default; the Nocturne WebM
+loops are optional resources under `/usr/share/dhampiros/motion/`.
 
-1. `source-rootfs/` — a small, tracked, source-first fallback containing the DhampirOS vector wallpaper, LXQt styling, menu/icon identity, palette and a source-only GRUB theme. This is sufficient for development and lets the Debian package build without a large binary archive.
-2. `rootfs-overlay.tar.gz` — the optional full validated artwork payload from the supplied DhampirOS asset pack. When present, the package build prefers this archive and installs the complete raster/cursor/sound artwork set.
+The legacy `rootfs-overlay.tar.gz` importer remains compatible with the
+original pack (SHA256
+`24def36263c99f32f57ba90e00efbb2292522972af928fce357c0ff2abb4da22`).
+An optional archive is extracted first; tracked files are always applied
+after it to preserve the current assets and new-user defaults.
 
-The full archive SHA256 is:
-
-`24def36263c99f32f57ba90e00efbb2292522972af928fce357c0ff2abb4da22`
-
-Use `../import-assets.py /path/to/vampire hunter d.zip` to extract and validate the full archive locally.
-
-The loose movie-reference JPEGs outside the purpose-built DhampirOS asset pack are not imported.
+Provenance and generation prompts are in `../source-meta/`; Cinzel's OFL
+and the artwork notice are installed under `/usr/share/doc/dhampiros-artwork/`.
+The loose movie-reference JPEGs are excluded from this package.

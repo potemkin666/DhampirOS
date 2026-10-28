@@ -1,39 +1,48 @@
 # DhampirOS theme asset integration
 
-The user supplied a validated DhampirOS asset pack on 2026-10-27.
+## Tracked payload
 
-## What is integrated
+`packages/dhampir/dhampiros-artwork/assets/source-rootfs/` is the complete
+canonical payload as of 2026-10-28. A binary overlay archive is no longer
+needed to build the package. It includes original generated fan artwork,
+110 full-colour icons, 78 panel symbols, animated and still cursor themes,
+LXQt/labwc resources, GRUB resources, Cinzel with its OFL, event sounds,
+and 1080p/720p Nocturne motion loops. Source prompts, asset indices and
+motion provenance are in `source-meta/`. Movie reference frames are excluded.
 
-The source package `packages/dhampir/dhampiros-artwork/` installs the pack's validated rootfs overlay. The overlay contains DhampirOS icons, cursor themes, LXQt and labwc theme resources, GRUB theme resources, backgrounds, boot artwork, fonts and sounds under `/usr/share`.
+The optional legacy `rootfs-overlay.tar.gz` importer remains supported.
+Installation extracts that first, then applies tracked files so an old
+archive cannot replace the current defaults. The two Dhampir LXQt GUI
+meta packages already depend on `dhampiros-artwork`.
 
-The `dhampir-vm-gui-lxqt` and `dhampir-baremetal-gui-lxqt` meta packages depend on `dhampiros-artwork`.
+## Desktop defaults and limits
 
-The package intentionally does not replace Kicksecure authentication, hardening, session policy, kernel arguments or network configuration.
+New-user `/etc/skel` settings select the DhampirOS LXQt/icon themes,
+Rainbound Hunter wallpaper in zoom mode, and DhampirNocturne QTerminal
+colours. Existing user settings are not rewritten.
 
-## Importing the binary payload
+The supplied motion loops are optional wallpaper resources. PCManFM-Qt's
+standard wallpaper setting uses a still image. Do not claim the native
+LXQt desktop plays video by default. GRUB selection, cursor selection,
+Plymouth, login/greetd and labwc activation still need runtime integration.
+Authentication, hardening, session policy and kernel/network settings
+remain upstream-controlled.
 
-The GitHub connector used for the initial integration cannot upload the binary archive itself. From a local checkout, run:
+## Website
 
-```bash
-python3 packages/dhampir/dhampiros-artwork/import-assets.py "/path/to/vampire hunter d.zip"
-```
+GitHub Pages serves the root on `master`. `index.html`, `pages.css`,
+`showcase.css` and `showcase.js` provide a standalone browser preview at
+`#icons`, with desktop windows, file browsing, a demonstration terminal,
+appearance controls, login/setup studies and the full icon browser.
+`showcase/visuals.json` indexes artwork shared with the Linux package.
+There are no remote scripts, real shell execution or password collection.
+The browser preview does not establish native boot or installation success.
 
-This extracts only the purpose-built `DhampirOS-Linux-Assets/DhampirOS-rootfs-overlay.tar.gz` payload to:
+## Basic validation
 
-```text
-packages/dhampir/dhampiros-artwork/assets/rootfs-overlay.tar.gz
-```
-
-The loose `art/` JPEG reference folder is deliberately ignored.
-
-Commit that one generated archive after reviewing it. The Debian package build fails clearly if it is absent.
-
-## Provenance supplied with the pack
-
-The pack states that its new illustrations were generated for DhampirOS, its vectors and event sounds are original, Cinzel is supplied under the OFL, and a supplied Vampire Hunter D still was used only as visual reference and is not bundled in the DhampirOS asset payload.
-
-## Still to wire up
-
-Installing artwork is separate from selecting it as the default. The `dhampiros-artwork` 0.2 package ships system-wide defaults for new users (`/etc/skel` LXQt `lxqt.conf`, pcmanfm-qt wallpaper, QTerminal `DhampirNocturne` colour scheme). These are visual only. Not yet wired: GRUB (`GRUB_THEME` is left to the upstream Kicksecure drop-in), cursor, Plymouth, login/greetd, and labwc, because the tracked `source-rootfs` payload has no assets for them. Login/greetd integration must merge only visual values and preserve upstream authentication/session behaviour.
-
-The static test `packages/dhampir/dhampiros-artwork/tests/test-theme-paths.sh` checks that every configured path exists in `assets/source-rootfs` and runs during `debian/rules override_dh_auto_test`.
+`python3 ci/check-showcase.py` checks local website references, matching
+web/native icons, SVG parsing, cursor file headers and required resources.
+`tests/test-theme-paths.sh` checks the package defaults and terminal palette
+during the Debian build. `bash ci/check-artwork.sh` also checks JavaScript
+syntax and builds this artwork package on Debian with debhelper installed;
+the focused `local-artwork.yml` workflow runs it without building an ISO.
