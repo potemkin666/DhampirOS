@@ -3,11 +3,12 @@
 # See the file COPYING for copying conditions.
 # AI-Assisted
 
-"""Input-transparent native Wayland underlay; only fixed local WebM files."""
+"""Input-transparent Wayland underlay, with one bounded local video decoder."""
 
 import os
 import signal
 import sys
+import threading
 import time
 
 from motionlib import STILL, VIDEOS, take_lock, wallpaper
@@ -15,9 +16,7 @@ from motionlib import STILL, VIDEOS, take_lock, wallpaper
 
 def main():
     lock = take_lock('player.lock')
-    if lock is None:
-        return 1
-    if len(sys.argv) != 2 or sys.argv[1] not in VIDEOS:
+    if lock is None or len(sys.argv) != 2 or sys.argv[1] not in VIDEOS:
         return 1
     import gi
     gi.require_version('Gtk', '3.0')
@@ -25,6 +24,7 @@ def main():
     gi.require_version('GdkPixbuf', '2.0')
     gi.require_version('Gst', '1.0')
     gi.require_version('GtkLayerShell', '0.1')
+    gi.require_foreign('cairo')
     from gi.repository import Gdk, GdkPixbuf, GLib, Gst, Gtk, GtkLayerShell
 
     if not Gtk.init_check()[0] or not GtkLayerShell.is_supported():
@@ -32,10 +32,13 @@ def main():
     Gst.init(None)
     os.nice(10)
     pipeline = Gst.Pipeline.new('dhampiros-local-wallpaper')
-    windows, stacks = [], []
+    windows, areas = [], []
     frame_times = {}
-    paused_hidden = False
-    announced = False
+    paused_hidden = announced = repaint_pending = False
+    still = GdkPixbuf.Pixbuf.new_from_file(str(STILL))
+    frame = still
+    latest_sample = None
+    sample_lock = threading.Lock()
 
     def element(name):
         result = Gst.ElementFactory.make(name)
@@ -50,48 +53,83 @@ def main():
         return GLib.SOURCE_REMOVE
 
     def orphaned():
-        # EOF means our session owner exited or was killed. Restore the real
-        # desktop before releasing the underlay, even after an abrupt death.
         try:
             wallpaper(STILL)
         finally:
             quit_player()
 
     def command(_stream, condition):
-        if condition & (GLib.IO_HUP | GLib.IO_ERR):
+        if condition & (GLib.IO_HUP | GLib.IO_ERR) or not sys.stdin.readline():
             orphaned()
-            return GLib.SOURCE_REMOVE
-        if not sys.stdin.readline():
-            orphaned()
-            return GLib.SOURCE_REMOVE
-        quit_player()
+        else:
+            quit_player()
         return GLib.SOURCE_REMOVE
 
+    def draw(area, context):
+        allocation = area.get_allocation()
+        ratio = max(allocation.width / frame.get_width(), allocation.height / frame.get_height())
+        context.save()
+        context.translate((allocation.width - frame.get_width() * ratio) / 2,
+                          (allocation.height - frame.get_height() * ratio) / 2)
+        context.scale(ratio, ratio)
+        Gdk.cairo_set_source_pixbuf(context, frame, 0, 0)
+        context.paint()
+        context.restore()
+        return False
+
+    def present_latest():
+        nonlocal latest_sample, repaint_pending, frame, announced
+        with sample_lock:
+            sample, latest_sample = latest_sample, None
+            repaint_pending = False
+        if sample is None or paused_hidden:
+            return GLib.SOURCE_REMOVE
+        structure = sample.get_caps().get_structure(0)
+        width, height = structure.get_value('width'), structure.get_value('height')
+        stride = (width * 3 + 3) & ~3
+        buffer = sample.get_buffer()
+        if not (0 < width <= 3840 and 0 < height <= 2160 and buffer.get_size() >= stride * height):
+            print('failed', flush=True)
+            return GLib.SOURCE_REMOVE
+        pixels = GLib.Bytes.new(buffer.extract_dup(0, stride * height))
+        frame = GdkPixbuf.Pixbuf.new_from_bytes(pixels, GdkPixbuf.Colorspace.RGB, False,
+                                               8, width, height, stride)
+        for area in areas:
+            area.queue_draw()
+        if not announced:
+            announced = True
+            print('ready', flush=True)
+        return GLib.SOURCE_REMOVE
+
+    def new_sample(sink):
+        nonlocal latest_sample, repaint_pending
+        sample = sink.emit('pull-sample')
+        if sample is None:
+            return Gst.FlowReturn.ERROR
+        with sample_lock:
+            latest_sample = sample
+            if not repaint_pending:
+                repaint_pending = True
+                GLib.idle_add(present_latest)
+        return Gst.FlowReturn.OK
+
     def message(_bus, event):
-        nonlocal announced
+        nonlocal frame
         if event.type == Gst.MessageType.EOS:
-            if not pipeline.seek_simple(Gst.Format.TIME, Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, 0):
+            if pipeline.seek_simple(Gst.Format.TIME, Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, 0):
+                print('looped', flush=True)
+            else:
                 print('failed', flush=True)
                 quit_player()
-            else:
-                print('looped', flush=True)
         elif event.type == Gst.MessageType.ERROR:
-            for stack in stacks:
-                stack.set_visible_child_name('still')
+            frame = still
+            for area in areas:
+                area.queue_draw()
             print(f'dhampiros-motion: decoder error: {event.parse_error()[0]}', file=sys.stderr)
             print('failed', flush=True)
             pipeline.set_state(Gst.State.NULL)
-        elif event.type == Gst.MessageType.ASYNC_DONE:
-            if not paused_hidden:
-                for stack in stacks:
-                    stack.set_visible_child_name('video')
-            if not announced and not paused_hidden:
-                announced = True
-                print('ready', flush=True)
 
     def resume_visible():
-        # Start decoding outside GTK's paint callback. Reopening the local
-        # pipeline avoids stale sink buffers after a compositor lock.
         pipeline.set_state(Gst.State.PLAYING)
         return GLib.SOURCE_REMOVE
 
@@ -103,16 +141,13 @@ def main():
             GLib.idle_add(resume_visible)
 
     def visibility_probe():
-        nonlocal paused_hidden
-        # Wayland withholds surface frame callbacks while outputs are hidden
-        # or locked. Probe with an occasional still redraw, not video decode.
+        nonlocal paused_hidden, frame
         if frame_times and time.monotonic() - max(frame_times.values()) > 5 and not paused_hidden:
             paused_hidden = True
             pipeline.set_state(Gst.State.NULL)
-            for stack in stacks:
-                stack.set_visible_child_name('still')
-        for window in windows:
-            window.queue_draw()
+            frame = still
+        for area in areas:
+            area.queue_draw()
         if os.environ.get('DHAMPIROS_MOTION_DEBUG') == '1':
             _result, current, pending = pipeline.get_state(0)
             _ok, position = pipeline.query_position(Gst.Format.TIME)
@@ -125,51 +160,40 @@ def main():
     decoder = element('vp9dec')
     decoder.set_property('threads', 2)
     convert = element('videoconvert')
-    tee = element('tee')
-    assert source.link(demux) and decoder.link(convert) and convert.link(tee)
+    caps = element('capsfilter')
+    caps.set_property('caps', Gst.Caps.from_string('video/x-raw,format=RGB'))
+    sink = element('appsink')
+    sink.set_property('emit-signals', True)
+    sink.set_property('max-buffers', 1)
+    sink.set_property('drop', True)
+    sink.set_property('wait-on-eos', False)
+    sink.connect('new-sample', new_sample)
+    assert source.link(demux) and decoder.link(convert) and convert.link(caps) and caps.link(sink)
 
     def video_pad(_demux, pad):
-        caps = pad.get_current_caps()
-        if caps and caps.to_string().startswith('video/x-vp9'):
+        video_caps = pad.get_current_caps()
+        if video_caps and video_caps.to_string().startswith('video/x-vp9'):
             pad.link(decoder.get_static_pad('sink'))
 
     demux.connect('pad-added', video_pad)
     display = Gdk.Display.get_default()
     if display.get_n_monitors() > 4:
         raise RuntimeError('More than four outputs: retaining the native still wallpaper')
-    pixbuf = GdkPixbuf.Pixbuf.new_from_file(str(STILL))
     for index in range(display.get_n_monitors()):
-        monitor = display.get_monitor(index)
         window = Gtk.Window(type=Gtk.WindowType.TOPLEVEL)
         window.set_accept_focus(False)
         window.set_focus_on_map(False)
         GtkLayerShell.init_for_window(window)
         GtkLayerShell.set_namespace(window, 'dhampiros-motion')
         GtkLayerShell.set_layer(window, GtkLayerShell.Layer.BACKGROUND)
-        GtkLayerShell.set_monitor(window, monitor)
+        GtkLayerShell.set_monitor(window, display.get_monitor(index))
         GtkLayerShell.set_keyboard_mode(window, GtkLayerShell.KeyboardMode.NONE)
         GtkLayerShell.set_exclusive_zone(window, -1)
         for edge in (GtkLayerShell.Edge.TOP, GtkLayerShell.Edge.BOTTOM, GtkLayerShell.Edge.LEFT, GtkLayerShell.Edge.RIGHT):
             GtkLayerShell.set_anchor(window, edge, True)
-        stack = Gtk.Stack()
-        stack.set_transition_type(Gtk.StackTransitionType.NONE)
-        geometry = monitor.get_geometry()
-        ratio = max(geometry.width / pixbuf.get_width(), geometry.height / pixbuf.get_height())
-        scaled = pixbuf.scale_simple(round(pixbuf.get_width() * ratio), round(pixbuf.get_height() * ratio), GdkPixbuf.InterpType.BILINEAR)
-        crop = scaled.new_subpixbuf(max(0, (scaled.get_width() - geometry.width) // 2),
-                                  max(0, (scaled.get_height() - geometry.height) // 2), geometry.width, geometry.height)
-        stack.add_named(Gtk.Image.new_from_pixbuf(crop), 'still')
-        queue = element('queue')
-        queue.set_property('max-size-buffers', 2)
-        queue.set_property('max-size-bytes', 0)
-        queue.set_property('max-size-time', 0)
-        queue.set_property('leaky', 2)
-        sink = element('gtksink')
-        sink.set_property('force-aspect-ratio', True)
-        assert tee.link(queue) and queue.link(sink)
-        stack.add_named(sink.get_property('widget'), 'video')
-        stack.set_visible_child_name('still')
-        window.add(stack)
+        area = Gtk.DrawingArea()
+        area.connect('draw', draw)
+        window.add(area)
         window.connect('destroy', quit_player)
         window.show_all()
         window.get_window().set_pass_through(True)
@@ -177,11 +201,9 @@ def main():
         frame_times[clock] = time.monotonic()
         clock.connect('after-paint', painted)
         windows.append(window)
-        stacks.append(stack)
+        areas.append(area)
     if not windows:
         return 1
-    # Monitor topology changes are handled conservatively: the owner restores
-    # PCManFM's still. Explicit restart can re-probe the new outputs.
     display.connect('monitor-added', lambda *_: quit_player())
     display.connect('monitor-removed', lambda *_: quit_player())
     settings = Gtk.Settings.get_default()
