@@ -8,6 +8,7 @@ on:
       - 'ci/audit-*'
       - 'ci/verify-*'
       - 'ci/check-image-tools.py'
+      - 'ci/prepare-image-release.py'
       - 'patches/dhampir-binary-eof.patch'
   push:
     branches: [master, 'codex/**']
@@ -17,6 +18,7 @@ on:
       - 'ci/audit-*'
       - 'ci/verify-*'
       - 'ci/check-image-tools.py'
+      - 'ci/prepare-image-release.py'
       - 'patches/dhampir-binary-eof.patch'
   workflow_dispatch:
 
