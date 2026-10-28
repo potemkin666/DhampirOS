@@ -32,6 +32,6 @@ export dist_build_smbios_reader=false
 ./help-steps/sign-and-tag
 
 ./derivative-maker --flavor dhampir-lxqt --target "${image_target}" \
-   --arch amd64 --freshness current --repo true --tb closed \
+   --arch amd64 --freshness current --repo true --tb closed --freedom false \
    --dry-run false --serial-console-enable false \
    --sanity-tests true
