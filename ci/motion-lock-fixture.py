@@ -16,7 +16,7 @@ assert GtkSessionLock.is_supported()
 lock = GtkSessionLock.prepare_lock()
 lock.connect('locked', lambda *_: print('locked', flush=True))
 lock.connect('finished', lambda *_: Gtk.main_quit())
-lock.lock()
+lock.lock_lock()
 display = Gdk.Display.get_default()
 windows = []
 for index in range(display.get_n_monitors()):

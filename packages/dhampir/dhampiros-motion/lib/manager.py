@@ -100,6 +100,7 @@ class Desktop:
         self.hot_samples = 0
         self.cpu_percent = 0.0
         self.rss_mib = 0.0
+        self.completed_loops = 0
         self.access_reduced = None
         try:
             self.policy = SessionPolicy()
@@ -113,6 +114,7 @@ class Desktop:
                 'player_pid': self.player.pid if self.player and self.player.poll() is None else None,
                 'desktop_pid': self.desktop.pid if self.desktop and self.desktop.poll() is None else None,
                 'cpu_one_core_percent': round(self.cpu_percent, 2), 'rss_mib': round(self.rss_mib, 2),
+                'completed_loops': self.completed_loops,
                 'fallback': str(STILL)}
 
     def stop_player(self):
@@ -128,7 +130,10 @@ class Desktop:
                 self.player.wait(timeout=2)
             except (OSError, subprocess.TimeoutExpired):
                 terminate(self.player)
-            self.player.stdin.close()
+            try:
+                self.player.stdin.close()
+            except OSError:
+                pass
             self.player.stdout.close()
             self.player = None
         self.current_quality = None
@@ -144,6 +149,7 @@ class Desktop:
             if not ready or child.stdout.readline().strip() != 'ready':
                 raise RuntimeError('The native layer did not become ready')
             self.player = child
+            self.completed_loops = 0
             self.current_quality = quality
             self.reason = 'playing'
             if self.desktop:
@@ -265,7 +271,9 @@ class Desktop:
                             pass
                 if self.player and self.player.stdout in ready:
                     message = self.player.stdout.readline().strip()
-                    if message != 'ready':
+                    if message == 'looped':
+                        self.completed_loops += 1
+                    elif message != 'ready':
                         self.failed.add(self.current_quality)
                         self.stop_player()
                         self.reconcile()
@@ -279,7 +287,7 @@ class Desktop:
             terminate(self.desktop)
             server.close()
             control_path.unlink(missing_ok=True)
-            (runtime_dir() / 'desktop.json').unlink(missing_ok=True)
+            control_path.with_name('desktop.json').unlink(missing_ok=True)
             lock.close()
 
     def shutdown(self, _signal, _frame):

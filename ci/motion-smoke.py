@@ -112,7 +112,7 @@ try:
         owner = status()['manager_pid']
         subprocess.run([CLI, 'desktop'], check=True, timeout=5, stdout=sys.stderr)
         assert status()['manager_pid'] == owner and len(player_pids()) == 1
-        time.sleep(2)
+        until(lambda: status().get('completed_loops', 0) >= 1, seconds=50)
         resources = status()
         # Exercise actual compositor occlusion separately from the logind
         # fixture, without changing system authentication or a real screen lock.
@@ -178,6 +178,7 @@ try:
         result = {'environment': 'Debian trixie, headless labwc/pixman, actual GTK layer-shell/GStreamer/PCManFM',
                   'logind': 'Private-bus fixture; actual DhampirOS login/logout and lock remain unverified',
                   'native_frames_change': True, 'reduced_frames_static': True, 'off_no_player': True,
+                  'native_loop_completed': True,
                   'headless_protocol_lock_pause_resume': True, 'locked_cpu_one_core_percent': round(locked_cpu, 2),
                   'duplicate_launch_one_owner': True, 'light_quality': True, 'lock_hint_stops_player': True,
                   'inactive_session_stops_player': True, 'owner_death_cleans_player': True,

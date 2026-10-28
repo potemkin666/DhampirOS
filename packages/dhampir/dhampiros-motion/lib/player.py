@@ -73,6 +73,8 @@ def main():
             if not pipeline.seek_simple(Gst.Format.TIME, Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, 0):
                 print('failed', flush=True)
                 quit_player()
+            else:
+                print('looped', flush=True)
         elif event.type == Gst.MessageType.ERROR:
             for stack in stacks:
                 stack.set_visible_child_name('still')
