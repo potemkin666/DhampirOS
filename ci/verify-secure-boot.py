@@ -195,9 +195,14 @@ def capture(label, media, secure, seconds, diagnostics=False):
                 time.sleep(15)
                 key("alt-f10")
                 time.sleep(5)
-                for name, text in (("secure-boot-state", "mokutil --sb-state"),
+                # First terminal focus can absorb early keystrokes. Prime it
+                # with a harmless command and read Secure Boot state last.
+                type_command("clear")
+                time.sleep(5)
+                for name, text in (("kernel-version", "uname -r"),
                                    ("kernel-lockdown", "cat /sys/kernel/security/lockdown"),
-                                   ("tirdad-state", "ls /sys/module/tirdad")):
+                                   ("tirdad-state", "ls /sys/module/tirdad"),
+                                   ("secure-boot-state", "mokutil --sb-state")):
                     key("ctrl-l")
                     type_command(text)
                     time.sleep(5)
