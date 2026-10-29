@@ -2,7 +2,7 @@
 
 This page explains, in plain language, how we will build `Dhampir.iso` and `Dhampir.ova`. It lives under `agents/` because `AGENTS.md` does not allow a `docs/` directory.
 
-**Status: experimental alpha images built.** Full ISO and VirtualBox builds completed in [40751365822](https://github.com/potemkin666/DhampirOS/actions/runs/40751365822). [Independent verification 40762495912](https://github.com/potemkin666/DhampirOS/actions/runs/40762495912) passed the offline gates and produced reviewed BIOS/UEFI KVM desktop captures. See [RELEASE-IMAGES.md](RELEASE-IMAGES.md) for the exact trust boundary and publication gates. Physical hardware, Secure Boot and actual VirtualBox runtime remain unverified.
+**Status: experimental alpha images built.** Full ISO and VirtualBox builds completed in [40751365822](https://github.com/potemkin666/DhampirOS/actions/runs/40751365822). [Independent verification 40762495912](https://github.com/potemkin666/DhampirOS/actions/runs/40762495912) passed the offline gates and produced reviewed BIOS/UEFI KVM desktop captures. See [RELEASE-IMAGES.md](RELEASE-IMAGES.md) for the exact trust boundary and publication gates. The exact public OVA also reached its desktop in [VirtualBox runtime verification 40782455595](https://github.com/potemkin666/DhampirOS/actions/runs/40782455595), with both BIOS and UEFI on Linux. Physical hardware, Secure Boot and Windows/macOS VirtualBox hosts remain unverified.
 
 ## The short version
 
@@ -61,7 +61,7 @@ sudo ./derivative-maker --flavor dhampir-lxqt --target iso
 - `--target iso` will produce `Dhampir.iso`.
 - Both use the Kicksecure build path (`dist_build_type_short=kicksecure`) with the `dhampir-vm-gui-lxqt` or `dhampir-baremetal-gui-lxqt` meta package, which depend on the Kicksecure LXQt packages.
 
-**Status: wired in, not built.** The flavor is registered in the parser and variable files. A static check covers this (`ci/check-dhampir-flavor`). No image build has been run, so these commands are **unverified**. The build environment could not run them (disk space and snapshot.debian.org DNS, see `agents/PHASE2-STOCK-BUILD-LOG.md`).
+**Historical Phase 2 status, superseded by the checked alpha above:** the local environment originally could not run full builds (disk space and snapshot.debian.org DNS, see `agents/PHASE2-STOCK-BUILD-LOG.md`). The full CI builds and current publication evidence are recorded in `RELEASE-IMAGES.md`.
 
 ## Step 2: what happens during a build
 
@@ -91,5 +91,5 @@ Upload `Dhampir.iso` and `Dhampir.ova` as GitHub Release assets. The `.gitignore
 
 ## Open questions
 
-- How to add a `dhampir` flavor cleanly to `derivative-maker`. (Phase 3 added `dhampir-lxqt`. A real build still needs to be verified.)
+- Physical hardware and Secure Boot testing beyond the current isolated VM checks.
 - Whether a custom kernel (later phase) needs a separate build step.
