@@ -93,3 +93,26 @@ unprivileged user for graphical runtime checks. No upstream submodules run.
 - Verified: 2026-10-28 by GitHub tag-ref API and the immutable release page.
 - Used only by owner-repository image builds, with job-scoped OIDC and
   attestation permissions. Provenance records origin; it does not certify safety.
+
+## Disposable VirtualBox host
+
+`local-image-virtualbox.yml` uses the existing checkout/upload pins above.
+Only this owner repository's disposable `github-hosted` runner may run its
+host setup. It never installs VirtualBox or changes kernel modules on the
+developer's Windows machine. The Ubuntu archive's VirtualBox 7.0.16 DKMS
+module failed against the hosted kernel 7.0.0-1017-azure before any guest ran.
+
+The replacement is Oracle's exact `virtualbox-7.2` package version
+`7.2.22-175245~Ubuntu~noble`, installed through authenticated APT metadata
+from `https://download.virtualbox.org/virtualbox/debian`. Its key is scoped
+to that source with `Signed-By`, with no `trusted=yes` or host-wide trust.
+
+- Archive key fingerprint: `B9F8D658297AF3EFC18D5CDFA2F683C52980AECF`.
+- Exact key blob SHA-256: `49e6801d45f6536232c11be6cdb43fa8e0198538d29d1075a7e10165e1fbafe2`.
+- Primary source: https://github.com/VirtualBox/virtualbox-website/blob/main/wiki/Linux_Downloads.md
+- Version source: https://download.virtualbox.org/virtualbox/7.2.22/
+- Verified 2026-10-28 against the vendor's key, fingerprint and release index.
+
+No Extension Pack is installed. The guest runs without a workflow token,
+network, shared folders, clipboard, drag/drop, USB or remote display.
+Original captures require visual review before claiming desktop success.

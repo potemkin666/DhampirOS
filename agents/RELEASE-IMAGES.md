@@ -132,3 +132,36 @@ a scoped udev rule; no guest security setting is changed. Normal-user GUI
 diagnostics are captured after the untouched boot evidence. Their first typed
 command can lose a prefix while the terminal maximizes; that automation
 artifact is not evidence of a missing installed command.
+
+## Subsequent actual VirtualBox runtime review
+
+On 2026-10-29, the original captures from successful run `40782455595`
+were visually reviewed. Verifier source `c778b0cd1a2a3f33023a7348aeb79726c489a357`
+downloaded the exact public alpha OVA, checked its existing reviewed hash,
+archive manifest, source ancestry and GitHub build attestation, then imported
+it into actual VirtualBox `7.2.22r175245` on disposable Linux hosted runners.
+Both BIOS and EFI reached the LXQt desktop with the original Dhampir artwork
+and the upstream setup-wizard completion message. Declared resources remained
+2 GiB RAM and 3 vCPUs. No image bytes or guest authentication policy changed.
+
+Before guest execution, all eight network adapters, clipboard, drag/drop,
+USB, audio and remote display were disabled. No shared folder was present.
+Guest writes went to fresh disposable imports. The host had kernel
+`7.0.0-1017-azure`; its Ubuntu VirtualBox 7.0.16 DKMS package could not build,
+so the verifier uses the pinned authenticated Oracle host package documented
+in `github-actions-security.md`. The first import attempt only displayed its
+license requirement; the completed unattended import explicitly accepts it.
+
+`release-reviews/v0.1.0-alpha.1-virtualbox.json` records the exact image,
+environments, original final capture hashes and all evidence file hashes.
+The public release adds `virtualbox-runtime-report.json`,
+`DhampirOS-VirtualBox-review.zip` and `VIRTUALBOX-SHA256SUMS`; their anonymous
+URLs and sizes were checked, and public JSON/checksum bytes matched locally.
+The original report, checksum file, images and original review remain intact
+as their historical verification snapshot. This supplement supersedes only
+the original report's statement that actual VirtualBox runtime was untested.
+
+This does not verify Windows/macOS VirtualBox hosts, physical hardware,
+Secure Boot, network/update operation, complete application use or the full
+login/lock lifecycle. It is not a fresh vulnerability scan. Original unresolved
+tracker findings, coverage limits and experimental-alpha restrictions remain.
