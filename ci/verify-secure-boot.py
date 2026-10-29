@@ -84,21 +84,30 @@ def prepare():
                 "--format=vmdk", "-a", SCRATCH / "guest.vmdk", "-i", root)
             mounted = True
             loaders = root / "boot/efi/EFI"
-        signatures = []
-        for binary in [*loaders.rglob("*.efi"), *(root / "boot").glob("vmlinuz-*")]:
-            # Only inspect packaged PE metadata; never run guest tools.
-            if binary.resolve().is_relative_to(root) or binary.resolve().is_relative_to(SCRATCH / "media-loaders"):
-                result = subprocess.run(["sbverify", "--list", str(binary)], text=True, capture_output=True)
-                signatures.append({"file": str(binary.relative_to(SCRATCH)), "sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
-                                   "returncode": result.returncode, "signature_metadata": result.stdout + result.stderr})
-        write_json(REPORT / "pe-signatures.json", signatures)
-        if TARGET == "iso":
-            run(sys.executable, ROOT / "ci/audit-hardware.py", root,
-                ROOT / "hardware/targets/lenovo-83da.json", REPORT)
+        # Guest root and ESP permissions are deliberately restrictive. Only the
+        # offline host-side metadata reader needs root; no token is forwarded.
+        run("sudo", "env", f"RUNNER_TEMP={os.environ['RUNNER_TEMP']}", f"IMAGE_TARGET={TARGET}",
+            sys.executable, Path(__file__).resolve(), "offline")
     finally:
         if mounted:
             run("sudo", "guestunmount", root)
     print(f"Authenticated and inspected the public {TARGET}", flush=True)
+
+
+def offline():
+    root = SCRATCH / "rootfs"
+    loaders = SCRATCH / "media-loaders" if TARGET == "iso" else root / "boot/efi/EFI"
+    signatures = []
+    for binary in [*loaders.rglob("*.efi"), *(root / "boot").glob("vmlinuz-*")]:
+        # Only inspect packaged PE metadata; never run guest tools.
+        if binary.resolve().is_relative_to(root) or binary.resolve().is_relative_to(SCRATCH / "media-loaders"):
+            result = subprocess.run(["sbverify", "--list", str(binary)], text=True, capture_output=True)
+            signatures.append({"file": str(binary.relative_to(SCRATCH)), "sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
+                               "returncode": result.returncode, "signature_metadata": result.stdout + result.stderr})
+    write_json(REPORT / "pe-signatures.json", signatures)
+    if TARGET == "iso":
+        print(run(sys.executable, ROOT / "ci/audit-hardware.py", root,
+                  ROOT / "hardware/targets/lenovo-83da.json", REPORT), flush=True)
 
 
 def capture(label, media, secure, seconds, diagnostics=False):
@@ -253,4 +262,4 @@ def boot():
 
 
 if __name__ == "__main__":
-    {"prepare": prepare, "boot": boot}[sys.argv[1]]()
+    {"prepare": prepare, "offline": offline, "boot": boot}[sys.argv[1]]()
