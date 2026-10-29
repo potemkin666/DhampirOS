@@ -1,0 +1,227 @@
+{
+  "schema": 1,
+  "status": "reviewed-secure-boot-vm-tests",
+  "reviewed_at": "2026-10-29T10:45:41.885949+00:00",
+  "verification_run": "40858979567",
+  "verification_url": "https://github.com/potemkin666/DhampirOS/actions/runs/40858979567",
+  "verifier_source_commit": "99d908dbc8c0c75edeca88f184b9f2e934d37d51",
+  "release": "v0.1.0-alpha.1",
+  "images": {
+    "iso": {
+      "identity": {
+        "target": "iso",
+        "url": "https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/DhampirOS-0.1.0-alpha.1-amd64.iso",
+        "sha256": "eb1ca786925cd90c937878aafc0075c669a961ed439e11dc1550a9e516b9972f",
+        "bytes": 1471897600,
+        "source_commit": "db5152d816559ed2365f81486c4106b17f20af83"
+      },
+      "outcome": "desktop with SecureBoot enabled and integrity lockdown",
+      "unsigned_control": {
+        "unsigned_sha256": "14643d94dfea9818a1daf26e2d7aee36375c41fe4065f52bfc529b3c4f58ee02",
+        "executes_with_setup_mode": true,
+        "executes_with_enrolled_keys": false,
+        "status": "passed"
+      },
+      "tirdad_module_loaded": false,
+      "tirdad_cause": "not-isolated",
+      "reviewed_capture_sha256": {
+        "desktop-capture.png": "f0cea6427dd8efc657ec619112b947ec27d6fb6969a44c78901606b34b7f66e7",
+        "secure-boot-state.png": "a1019c049b47bba34bf0ab2ceaaf781726c551d58751f80574072222b0f26807",
+        "kernel-lockdown.png": "a242184495cded6e19fbfc9d4187abb0bfa9b0083d34f5997b62223e538d1ed7",
+        "tirdad-state.png": "d9278f5f263885a3706c0571a225fc6cc0ee75897aceda9fc51d35e9053e73f9",
+        "unsigned-control-on/boot-20.png": "af883a418102a4f713880ada3d489718897fb4eb1d932cb37bb369d9a4a42027"
+      },
+      "firmware": {
+        "code": "/usr/share/OVMF/OVMF_CODE_4M.secboot.fd",
+        "code_sha256": "1286f2a3217d09b374d05951355d7a561c8bacecd74845c8a1fbb71a48c0de8d",
+        "template": "/usr/share/OVMF/OVMF_VARS_4M.ms.fd",
+        "template_sha256": "a9b2b13aba3d4629593913471af7545bd8eef1d414f33cab4c86fff7d5bc09b9",
+        "secure_boot_requested": true,
+        "smm": true,
+        "scope": "Distribution-supplied enrolled-key template; not every OEM key or current revocation database"
+      },
+      "evidence_sha256": {
+        "attestation-verification.json": "39a299512f144b61b95a5811eae2ddb8337daa55c4d146905b036b8c141a2199",
+        "enforcement-control.json": "b42781768275bc83c20df0d3eba3d6ae28a3cce44175aad85d4d001c883cbfa8",
+        "hardware-driver-report.json": "d4b2c8186f52362d05463b8ec0d570875e99855cc29484e204f65dcbef67c06f",
+        "image-identity.json": "85bfa9e178880f37b532b3b1028159d52c783f0ef797aa493cf89418c4a53ca1",
+        "pe-signatures.json": "49f599dd83fbdd6adae2a6d2f7ff53270a92d42847d7a0e6ce7a3ca1f2489531",
+        "published-image/boot-20.png": "06d641187ca30365fa19fc4b71ae660297b4a03274905ea987089956a47230d3",
+        "published-image/boot-240.png": "f0cea6427dd8efc657ec619112b947ec27d6fb6969a44c78901606b34b7f66e7",
+        "published-image/boot-90.png": "d6399ed73b8b019a9f3fbbc9af32d292bd9336e8b511c81358fda56ca7461852",
+        "published-image/command.json": "de1a61c59902688a5ba272a16ad47575fe796a211959d805acc4dffc3f54b08a",
+        "published-image/desktop-capture.png": "f0cea6427dd8efc657ec619112b947ec27d6fb6969a44c78901606b34b7f66e7",
+        "published-image/firmware-vars.txt": "143cb2b787be6dc3600abd295b7117b5bb5ba9490917a263ea4cfe691f13b6a1",
+        "published-image/firmware.json": "557882b502667eff2d68f1571e4eae882537a627ace34112a23deda46481f5af",
+        "published-image/kernel-lockdown.png": "a242184495cded6e19fbfc9d4187abb0bfa9b0083d34f5997b62223e538d1ed7",
+        "published-image/kernel-lockdown.txt": "d89961f5cbaaac45bcf32bca7da656123b80dc60e74c5be1fd93bf9a2278f7c9",
+        "published-image/kernel-version.png": "5f3362b3663b804082439a9b4c3e52441fa79bafd4beede1d34e81c7854d7bd1",
+        "published-image/kernel-version.txt": "20292f649366e7bfe566818aa3bc66252fc0639c5fe6c147a5199d4bd3d87f9e",
+        "published-image/qemu.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "published-image/secure-boot-state.png": "a1019c049b47bba34bf0ab2ceaaf781726c551d58751f80574072222b0f26807",
+        "published-image/secure-boot-state.txt": "f1e5c466e9f8b068072c7de07fa9fc3b675552c2e3ac13cd50d62a9f559384c0",
+        "published-image/serial.log": "292bd265c7d135dec64abd632d9739a309e1d23207a6278651e9b4f784d74542",
+        "published-image/tirdad-state.png": "d9278f5f263885a3706c0571a225fc6cc0ee75897aceda9fc51d35e9053e73f9",
+        "published-image/tirdad-state.txt": "eb4d91b4d5c95527a34837e9d78708e36ecbc85d13959a239c56dc129ae6484f",
+        "review-status.json": "8dbade673061ff816be8ddbf14d7d2368d4e26da31e20b51bddd69881a06afd2",
+        "unsigned-control-off/boot-20.png": "3ffa7dc91c55a16310d5eede3f689c64fe0dcba9f8b6aeb1ac8400fe62d63ddd",
+        "unsigned-control-off/command.json": "b30f52ad6646aafac84261cdca1cb381e5ed1267b0bb4c0cd4a4b73df95af1a8",
+        "unsigned-control-off/firmware-vars.txt": "cfe281d9ece96647782cb123c2d17980fe689783c92ffa1b73d9b443223e71d6",
+        "unsigned-control-off/firmware.json": "78d38ad1e89955a5bb90dcb12deb061dfbacdcc6a7db2fc97c5354410c21f245",
+        "unsigned-control-off/qemu.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "unsigned-control-off/serial.log": "c2907fb692db673018eb9f3597d14332720dc3492b73fbbab4a1cfb7753dcaae",
+        "unsigned-control-on/boot-20.png": "af883a418102a4f713880ada3d489718897fb4eb1d932cb37bb369d9a4a42027",
+        "unsigned-control-on/command.json": "a38eb15e87665dad3a8276280d28f37f4f1388fee496fa8ccffdbe1ef54bc9e3",
+        "unsigned-control-on/firmware-vars.txt": "f977ffc4b26d19182d73cf44b60ed155c6086c36040e4e7799ad2f2b4fb7477f",
+        "unsigned-control-on/firmware.json": "557882b502667eff2d68f1571e4eae882537a627ace34112a23deda46481f5af",
+        "unsigned-control-on/qemu.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "unsigned-control-on/serial.log": "3255c6501434ba4b2ea454ae1479d64b4bb3ca151472b02581f0798e4e0d0303",
+        "unsigned-control-signatures.txt": "bb5d40c215485d6c0142b7b0a039d6446f270454940c60f6e20e2019b3dda806"
+      }
+    },
+    "ova": {
+      "identity": {
+        "target": "ova",
+        "url": "https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/DhampirOS-0.1.0-alpha.1-amd64.ova",
+        "sha256": "e81ded3eff4c0cca636fb162953f4d1a74f22770e3b4888b88cbbe8784d2641d",
+        "bytes": 1295400960,
+        "source_commit": "db5152d816559ed2365f81486c4106b17f20af83"
+      },
+      "outcome": "desktop with SecureBoot enabled and integrity lockdown",
+      "unsigned_control": {
+        "unsigned_sha256": "14643d94dfea9818a1daf26e2d7aee36375c41fe4065f52bfc529b3c4f58ee02",
+        "executes_with_setup_mode": true,
+        "executes_with_enrolled_keys": false,
+        "status": "passed"
+      },
+      "tirdad_module_loaded": false,
+      "tirdad_cause": "not-isolated",
+      "reviewed_capture_sha256": {
+        "desktop-capture.png": "f482902c99d86eb04fb59c7d5b472b06657788f8fab7d2ccd53feec3b3441b88",
+        "secure-boot-state.png": "d19bf81a4be8bca96ebb9be3cefaa5d70bf40a67be7ed6dd9f3fecc37bcb9b92",
+        "kernel-lockdown.png": "62203dac9fc99832b89c328f97b55df0bf83d214d97379e00a607e8ef50c66b1",
+        "tirdad-state.png": "e81d00e989b69c2139a48b6ade719b154a5a2a7628dbd1f657890777fc1f1f39",
+        "unsigned-control-on/boot-20.png": "af883a418102a4f713880ada3d489718897fb4eb1d932cb37bb369d9a4a42027"
+      },
+      "firmware": {
+        "code": "/usr/share/OVMF/OVMF_CODE_4M.secboot.fd",
+        "code_sha256": "1286f2a3217d09b374d05951355d7a561c8bacecd74845c8a1fbb71a48c0de8d",
+        "template": "/usr/share/OVMF/OVMF_VARS_4M.ms.fd",
+        "template_sha256": "a9b2b13aba3d4629593913471af7545bd8eef1d414f33cab4c86fff7d5bc09b9",
+        "secure_boot_requested": true,
+        "smm": true,
+        "scope": "Distribution-supplied enrolled-key template; not every OEM key or current revocation database"
+      },
+      "evidence_sha256": {
+        "attestation-verification.json": "4bcafbd7b44ec84aaa9cb6b06d60e3a59f829a538f8810e8ad13cb877a755c2d",
+        "enforcement-control.json": "b42781768275bc83c20df0d3eba3d6ae28a3cce44175aad85d4d001c883cbfa8",
+        "image-identity.json": "88259db871c38d5c668ae18ee7c80fcd0958ee3c991dae4692cda912e5ca162a",
+        "ova-audit.json": "8bb6abd43badd379c2826fcaae9731be6cc6bbdae2a5a6163ba243c426f533da",
+        "pe-signatures.json": "20ae217c3aa7707b9b8d3a145b477905327ba947212d95d00222c0e88aa78437",
+        "published-image/boot-20.png": "d85a3b3800844554fce4624dde4b0ab5f2040135622b96bb19f5c9fe8716a8c5",
+        "published-image/boot-240.png": "f482902c99d86eb04fb59c7d5b472b06657788f8fab7d2ccd53feec3b3441b88",
+        "published-image/boot-90.png": "7029653ffbe0825c14aba8993989bfdef74c595a25c538622ec7316e1658d181",
+        "published-image/command.json": "e045638ffc48d123b6051fac6b2ed262614d7dcd0818fe4c0276619fd4ec7823",
+        "published-image/desktop-capture.png": "f482902c99d86eb04fb59c7d5b472b06657788f8fab7d2ccd53feec3b3441b88",
+        "published-image/firmware-vars.txt": "143cb2b787be6dc3600abd295b7117b5bb5ba9490917a263ea4cfe691f13b6a1",
+        "published-image/firmware.json": "557882b502667eff2d68f1571e4eae882537a627ace34112a23deda46481f5af",
+        "published-image/kernel-lockdown.png": "62203dac9fc99832b89c328f97b55df0bf83d214d97379e00a607e8ef50c66b1",
+        "published-image/kernel-lockdown.txt": "332b7ca36b05ebcfcce160e1db38e45ad70e4beabb46dc57aa4d8622f28fec36",
+        "published-image/kernel-version.png": "1975dc8e67f2f88847cd6e9f1dc7f1a686bd1c4ccc83aa8456f99b9edbcc5512",
+        "published-image/kernel-version.txt": "40cc572389a911ee3842f48d2c48872e029b4362970856d1ea4b5c4812601267",
+        "published-image/qemu.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "published-image/secure-boot-state.png": "d19bf81a4be8bca96ebb9be3cefaa5d70bf40a67be7ed6dd9f3fecc37bcb9b92",
+        "published-image/secure-boot-state.txt": "cab62e16b6346e51da9dc960691c6ec77c4eadb8830d4c788be42a17ef132022",
+        "published-image/serial.log": "c4745e018161bd866545554c521413fb7ec4fa6ff47285242e034961f5d6d052",
+        "published-image/tirdad-state.png": "e81d00e989b69c2139a48b6ade719b154a5a2a7628dbd1f657890777fc1f1f39",
+        "published-image/tirdad-state.txt": "dedd53cd4b93fdcb3e2ae654e70125fe10df04489c56026b375ec145c6069bc9",
+        "review-status.json": "8dbade673061ff816be8ddbf14d7d2368d4e26da31e20b51bddd69881a06afd2",
+        "unsigned-control-off/boot-20.png": "3ffa7dc91c55a16310d5eede3f689c64fe0dcba9f8b6aeb1ac8400fe62d63ddd",
+        "unsigned-control-off/command.json": "b30f52ad6646aafac84261cdca1cb381e5ed1267b0bb4c0cd4a4b73df95af1a8",
+        "unsigned-control-off/firmware-vars.txt": "cfe281d9ece96647782cb123c2d17980fe689783c92ffa1b73d9b443223e71d6",
+        "unsigned-control-off/firmware.json": "78d38ad1e89955a5bb90dcb12deb061dfbacdcc6a7db2fc97c5354410c21f245",
+        "unsigned-control-off/qemu.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "unsigned-control-off/serial.log": "c2907fb692db673018eb9f3597d14332720dc3492b73fbbab4a1cfb7753dcaae",
+        "unsigned-control-on/boot-20.png": "af883a418102a4f713880ada3d489718897fb4eb1d932cb37bb369d9a4a42027",
+        "unsigned-control-on/command.json": "a38eb15e87665dad3a8276280d28f37f4f1388fee496fa8ccffdbe1ef54bc9e3",
+        "unsigned-control-on/firmware-vars.txt": "f977ffc4b26d19182d73cf44b60ed155c6086c36040e4e7799ad2f2b4fb7477f",
+        "unsigned-control-on/firmware.json": "557882b502667eff2d68f1571e4eae882537a627ace34112a23deda46481f5af",
+        "unsigned-control-on/qemu.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "unsigned-control-on/serial.log": "3255c6501434ba4b2ea454ae1479d64b4bb3ca151472b02581f0798e4e0d0303",
+        "unsigned-control-signatures.txt": "bb5d40c215485d6c0142b7b0a039d6446f270454940c60f6e20e2019b3dda806"
+      }
+    }
+  },
+  "scope": "Exact public ISO and OVA in network-isolated QEMU/KVM with Q35, SMM and enrolled-key OVMF. Original desktop, unsigned rejection, Secure Boot and lockdown captures visually reviewed.",
+  "hardware_target": {
+    "schema": 1,
+    "target": "Lenovo 83DA",
+    "architecture": "amd64",
+    "cpu": "Intel Core Ultra 7 155H",
+    "memory_gib": 16,
+    "devices": [
+      {
+        "name": "Standard NVM Express Controller",
+        "class": "SCSIAdapter",
+        "pci_id": "1C5C:1D59",
+        "linux_modalias": "pci:v00001C5Cd00001D59sv00001C5Csd00001D59bc01sc08i02"
+      },
+      {
+        "name": "Intel(R) Wi-Fi 6E AX211 160MHz",
+        "class": "Net",
+        "pci_id": "8086:7E40",
+        "linux_modalias": "pci:v00008086d00007E40sv00008086sd00000094bc02sc80i00"
+      },
+      {
+        "name": "Intel(R) Arc(TM) Graphics",
+        "class": "Display",
+        "pci_id": "8086:7D55",
+        "linux_modalias": "pci:v00008086d00007D55sv000017AAsd00003D0Fbc03sc00i00"
+      }
+    ],
+    "scope": "Sanitized hardware target selected by the owner. PCI driver and firmware inspection is not a physical compatibility test. No serial numbers, hostnames, device-instance paths or network addresses are included."
+  },
+  "physical_hardware_test": "not-performed",
+  "read_only_collector": {
+    "url": "https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/DhampirOS-live-hardware-check.zip",
+    "sha256": "83c2634640ed2e4cfb431eb8fcdb4cd011e43d7b6f45b93591babb90db9d55e7",
+    "scope": "Read-only local observations; no uploads, disk changes or automatic functional pass claims"
+  },
+  "limitations": [
+    "Physical hardware, real Lenovo firmware, Windows/macOS hypervisor hosts and actual device initialization are untested.",
+    "The distribution-supplied OVMF template includes Microsoft 2011 and 2023 trust authorities. OEM trust databases, firmware updates and current complete revocation coverage are not verified.",
+    "No complete verified-root, dm-verity, UKI or full initramfs authentication was added.",
+    "tirdad was not loaded in either enforcing session. The cause was not isolated with a matched Secure-Boot-off module-loading comparison; do not claim all upstream hardening features function in this mode.",
+    "Original unresolved vulnerability findings and coverage limitations remain. This runtime check is not a fresh vulnerability scan or security certification.",
+    "Upstream passwordless local autologin/account setup remains. Configure credentials before persistent use.",
+    "Experimental alpha for isolated VM testing, not sensitive or production workloads."
+  ],
+  "original_verification_report": "https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/verification-report.json",
+  "evidence_archive": "https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/DhampirOS-Secure-Boot-review.zip",
+  "hardware_inspection": {
+    "kernel": "6.12.113+deb13-amd64",
+    "devices": [
+      {
+        "pci_id": "1C5C:1D59",
+        "matching_drivers": [
+          "nvme"
+        ]
+      },
+      {
+        "pci_id": "8086:7E40",
+        "matching_drivers": [
+          "iwlwifi"
+        ]
+      },
+      {
+        "pci_id": "8086:7D55",
+        "matching_drivers": [
+          "i915",
+          "xe"
+        ]
+      }
+    ],
+    "scope": "PCI aliases and installed module/firmware metadata only",
+    "physical_test": "not-performed"
+  }
+}

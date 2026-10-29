@@ -137,7 +137,7 @@
 | ✓ | AMD64 ISO / OVA | built and checked for alpha 0.1.0 |
 | ◇ | custom Dhampir kernel | not started |
 
-> **Experimental alpha.** The full ISO and OVA reached the Dhampir desktop in network-isolated BIOS and UEFI KVM tests. The exact public OVA also passed reviewed BIOS/UEFI boots in VirtualBox 7.2.22 on Linux ([runtime evidence](https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/virtualbox-runtime-report.json)). These images are for isolated VM testing. Unresolved upstream tracker findings and other verification limits remain; this is not a security certification or a production-ready release.
+> **Experimental alpha.** The full ISO and OVA reached the Dhampir desktop in network-isolated BIOS and UEFI KVM tests. The exact public OVA also passed reviewed BIOS/UEFI boots in VirtualBox 7.2.22 on Linux ([runtime evidence](https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/virtualbox-runtime-report.json)). Both images also passed [enforcing Secure Boot VM checks](https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/secure-boot-hardware-report.json), including an unsigned-loader rejection control and kernel integrity lockdown. The extra `tirdad` module was not loaded in those sessions. Physical hardware remains untested. These images are for isolated VM testing. Unresolved upstream tracker findings and other verification limits remain; this is not a security certification or a production-ready release.
 
 Build details live in [`agents/BUILD.md`](agents/BUILD.md). DhampirOS is an independent project based on Kicksecure/Debian and is not endorsed by the Kicksecure or Whonix developers.
 

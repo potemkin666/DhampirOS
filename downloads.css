@@ -25,4 +25,12 @@
 .release-capture figure{max-width:960px;margin:18px 0}
 .release-capture img{display:block;width:100%;height:auto;border:1px solid #344157;border-radius:6px}
 .release-capture figcaption{margin-top:10px;color:var(--muted);font-size:11px;line-height:1.7}
+.hardware-review{margin:24px 0;max-width:900px;border:1px solid #344157;border-radius:8px;background:#101722;padding:18px 22px;color:var(--muted);font-size:12px;line-height:1.8}
+.hardware-review summary{color:#c4d5e7;cursor:pointer}
+.hardware-review p{margin:14px 0 0}
+.hardware-review table{width:100%;border-collapse:collapse;margin-top:16px;table-layout:fixed}
+.hardware-review caption{text-align:left;font-size:11px;color:#9bacc0;padding-bottom:8px}
+.hardware-review th,.hardware-review td{text-align:left;vertical-align:top;padding:10px 8px;border-bottom:1px solid #2b3546;overflow-wrap:anywhere;font-weight:400}
+.hardware-review thead th{color:#d0dce9;font-size:11px}
+.hardware-review code,.secure-boot-scope code{font-size:11px}
 @media(max-width:700px){.download-grid{grid-template-columns:1fr}.download-card{padding:26px}.download-assurance{gap:16px}}

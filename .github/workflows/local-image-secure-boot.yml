@@ -1,0 +1,65 @@
+name: DhampirOS Secure Boot and hardware inspection
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['codex/secure-boot-hardware']
+    paths:
+      - '.github/workflows/local-image-secure-boot.yml'
+      - 'ci/verify-secure-boot.py'
+      - 'ci/audit-hardware.py'
+      - 'hardware/targets/*.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inspect:
+    if: github.repository == 'potemkin666/DhampirOS'
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [iso, ova]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      attestations: read
+    steps:
+      - name: Bootstrap the disposable firmware verifier
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends qemu-system-x86 qemu-utils ovmf python3-virt-firmware python3-pil tesseract-ocr libguestfs-tools xorriso squashfs-tools grub-efi-amd64-bin mtools dosfstools sbsigntool kmod
+          if [ -c /dev/kvm ]; then
+            printf 'KERNEL=="kvm", OWNER="%s", MODE="0600"\n' "$(id -un)" | sudo tee /etc/udev/rules.d/99-dhampiros-kvm.rules >/dev/null
+            sudo udevadm control --reload-rules
+            sudo udevadm trigger --subsystem-match=misc --sysname-match=kvm
+            sudo udevadm settle
+            sudo chown "$(id -u)" /dev/kvm
+            sudo chmod 0600 /dev/kvm
+          fi
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Authenticate and inspect the exact public image
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IMAGE_TARGET: ${{ matrix.target }}
+        run: ./ci/verify-secure-boot.py prepare
+      - name: Test unsigned rejection and boot the published image with Secure Boot
+        env:
+          IMAGE_TARGET: ${{ matrix.target }}
+        run: ./ci/verify-secure-boot.py boot
+      - name: Preserve firmware identities, controls and original captures
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: dhampiros-secure-boot-${{ matrix.target }}
+          path: verification/secure-boot/
+          if-no-files-found: warn
+          retention-days: 30

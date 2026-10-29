@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "target": "Lenovo 83DA",
+  "architecture": "amd64",
+  "cpu": "Intel Core Ultra 7 155H",
+  "memory_gib": 16,
+  "devices": [
+    {
+      "name": "Standard NVM Express Controller",
+      "class": "SCSIAdapter",
+      "pci_id": "1C5C:1D59",
+      "linux_modalias": "pci:v00001C5Cd00001D59sv00001C5Csd00001D59bc01sc08i02"
+    },
+    {
+      "name": "Intel(R) Wi-Fi 6E AX211 160MHz",
+      "class": "Net",
+      "pci_id": "8086:7E40",
+      "linux_modalias": "pci:v00008086d00007E40sv00008086sd00000094bc02sc80i00"
+    },
+    {
+      "name": "Intel(R) Arc(TM) Graphics",
+      "class": "Display",
+      "pci_id": "8086:7D55",
+      "linux_modalias": "pci:v00008086d00007D55sv000017AAsd00003D0Fbc03sc00i00"
+    }
+  ],
+  "scope": "Sanitized hardware target selected by the owner. PCI driver and firmware inspection is not a physical compatibility test. No serial numbers, hostnames, device-instance paths or network addresses are included."
+}
