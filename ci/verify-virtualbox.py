@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""AI-Assisted. Import the exact public OVA and capture isolated VirtualBox boots."""
+"""AI-Assisted. Capture isolated VirtualBox boots of exact public ISO/OVA files."""
 
 import hashlib
 import json
@@ -17,7 +17,10 @@ REPOSITORY = "potemkin666/DhampirOS"
 ROOT = Path(__file__).resolve().parent.parent
 REPORT = ROOT / "verification/virtualbox"
 SCRATCH = Path(os.environ.get("RUNNER_TEMP", "/tmp")) / "dhampiros-virtualbox-runtime"
-APPLIANCE = SCRATCH / "DhampirOS-0.1.0-alpha.1-amd64.ova"
+TARGET = os.environ.get("IMAGE_TARGET", "ova")
+if TARGET not in ("ova", "iso"):
+    raise SystemExit("Unsupported image target")
+APPLIANCE = SCRATCH / f"DhampirOS-0.1.0-alpha.1-amd64.{TARGET}"
 CATALOGUE = ROOT / "showcase/downloads.json"
 
 
@@ -82,14 +85,14 @@ def prepare():
     SCRATCH.mkdir(parents=True, exist_ok=True)
     release = json.loads(CATALOGUE.read_text())
     review = json.loads((ROOT / "release-reviews/v0.1.0-alpha.1.json").read_text())
-    asset = release["assets"]["ova"]
+    asset = release["assets"][TARGET]
     url = urlparse(asset["url"])
     if (release["status"] != "published" or release["audit"] != "passed" or
             release["version"] != "0.1.0-alpha.1" or
             url.geturl() != f"https://github.com/{REPOSITORY}/releases/download/v0.1.0-alpha.1/{APPLIANCE.name}" or
             not re.fullmatch(r"[a-f0-9]{40}", release["source_commit"]) or
             review["source_commit"] != release["source_commit"] or
-            review["ova"]["sha256"] != asset["sha256"]):
+            review[TARGET]["sha256"] != asset["sha256"]):
         raise SystemExit("Published appliance does not match the reviewed catalogue")
     run("git", "merge-base", "--is-ancestor", release["source_commit"], "HEAD")
     run("gh", "release", "download", "v0.1.0-alpha.1", "--repo", REPOSITORY,
@@ -107,12 +110,17 @@ def prepare():
         "url": asset["url"], "sha256": digest, "bytes": APPLIANCE.stat().st_size,
         "source_commit": release["source_commit"],
     })
-    # Existing archive audit validates all members and manifests before import.
-    # Its extracted disk stays in disposable scratch, outside uploaded evidence.
-    audit = SCRATCH / "archive-audit"
-    run(sys.executable, str(ROOT / "ci/audit-ova.py"), str(APPLIANCE), str(audit))
-    shutil.copyfile(audit / "ova-audit.json", REPORT / "ova-audit.json")
-    print("Authenticated the exact published OVA and its archive manifest", flush=True)
+    if TARGET == "ova":
+        # Existing archive audit validates all members and manifests before import.
+        # Its extracted disk stays outside uploaded evidence.
+        audit = SCRATCH / "archive-audit"
+        run(sys.executable, str(ROOT / "ci/audit-ova.py"), str(APPLIANCE), str(audit))
+        shutil.copyfile(audit / "ova-audit.json", REPORT / "ova-audit.json")
+        resources = json.loads((audit / "ova-audit.json").read_text())
+    else:
+        resources = {"memory_mib": 4096, "processors": 2}
+    write_json(REPORT / "declared-resources.json", resources)
+    print(f"Authenticated the exact published {TARGET.upper()}", flush=True)
 
 
 def boot():
@@ -133,12 +141,22 @@ def boot():
     run("sudo", "chown", str(os.getuid()), "/dev/vboxdrv")
     run("sudo", "chmod", "0600", "/dev/vboxdrv")
     os.environ["VBOX_USER_HOME"] = str(SCRATCH / "settings")
-    name = f"dhampiros-runtime-{firmware}"
+    name = f"dhampiros-runtime-{TARGET}-{firmware}"
     version = run("VBoxManage", "--version").strip()
-    (REPORT / "import.log").write_text(run(
-        "VBoxManage", "import", str(APPLIANCE), "--vsys", "0", "--vmname", name,
-        "--basefolder", str(SCRATCH / "machines"), "--eula", "accept",
-        "--settingsfile", str(SCRATCH / "machines" / name / f"{name}.vbox")))
+    if TARGET == "ova":
+        (REPORT / "import.log").write_text(run(
+            "VBoxManage", "import", str(APPLIANCE), "--vsys", "0", "--vmname", name,
+            "--basefolder", str(SCRATCH / "machines"), "--eula", "accept",
+            "--settingsfile", str(SCRATCH / "machines" / name / f"{name}.vbox")))
+    else:
+        run("VBoxManage", "createvm", "--name", name, "--ostype", "Debian_64",
+            "--basefolder", str(SCRATCH / "machines"), "--register")
+        run("VBoxManage", "modifyvm", name, "--memory", "4096", "--cpus", "2",
+            "--graphicscontroller", "vmsvga", "--vram", "128", "--ioapic", "on",
+            "--boot1", "dvd", "--boot2", "none", "--boot3", "none", "--boot4", "none")
+        run("VBoxManage", "storagectl", name, "--name", "ISO", "--add", "sata", "--controller", "IntelAhci")
+        run("VBoxManage", "storageattach", name, "--storagectl", "ISO", "--port", "0",
+            "--device", "0", "--type", "dvddrive", "--medium", str(APPLIANCE))
     started = False
     try:
         # Preserve declared CPU, RAM, graphics and storage. Disable host-facing
@@ -156,7 +174,7 @@ def boot():
             key, separator, value = line.partition("=")
             if separator:
                 config[key] = value.strip('"')
-        declared = json.loads((REPORT / "ova-audit.json").read_text())
+        declared = json.loads((REPORT / "declared-resources.json").read_text())
         if (config.get("memory") != str(declared["memory_mib"]) or
                 config.get("cpus") != str(declared["processors"])):
             raise RuntimeError("Imported appliance resources changed")
@@ -167,7 +185,7 @@ def boot():
                 config.get("vrde") != "off" or "SharedFolderName" in information):
             raise RuntimeError("A host integration feature remains enabled")
         write_json(REPORT / "boot-environment.json", {
-            "virtualbox": version, "kernel": run("uname", "-r").strip(), "firmware": firmware,
+            "target": TARGET, "virtualbox": version, "kernel": run("uname", "-r").strip(), "firmware": firmware,
             "network": "all adapters disabled", "clipboard": "disabled", "drag_and_drop": "disabled",
             "shared_folders": "none", "usb": "disabled", "remote_display": "disabled",
             "writes": "fresh disposable import; published bytes unchanged",
