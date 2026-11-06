@@ -159,8 +159,8 @@ def boot():
             "--device", "0", "--type", "dvddrive", "--medium", str(APPLIANCE))
     started = False
     try:
-        # Preserve declared CPU, RAM, graphics and storage. Disable host-facing
-        # features before the imported guest can execute its first instruction.
+        # Preserve the selected profile. Disable host-facing features before
+        # the guest can execute its first instruction.
         options = ["--firmware", firmware, "--clipboard-mode", "disabled",
                    "--draganddrop", "disabled", "--vrde", "off", "--audio-enabled", "off",
                    "--usb", "off", "--usbehci", "off", "--usbxhci", "off"]
@@ -188,7 +188,8 @@ def boot():
             "target": TARGET, "virtualbox": version, "kernel": run("uname", "-r").strip(), "firmware": firmware,
             "network": "all adapters disabled", "clipboard": "disabled", "drag_and_drop": "disabled",
             "shared_folders": "none", "usb": "disabled", "remote_display": "disabled",
-            "writes": "fresh disposable import; published bytes unchanged",
+            "writes": ("fresh disposable import; published bytes unchanged" if TARGET == "ova"
+                       else "live ISO; no virtual hard disk attached; published bytes unchanged"),
             "declared_memory_mib": config.get("memory"), "declared_cpus": config.get("cpus"),
         })
         run("VBoxManage", "startvm", name, "--type", "headless")
