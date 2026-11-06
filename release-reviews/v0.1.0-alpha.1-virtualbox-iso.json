@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "status": "reviewed-native-virtualbox-iso-boots",
+  "reviewed_at": "2026-11-06T12:14:27.591373+00:00",
+  "verification_run": "42214943797",
+  "verification_url": "https://github.com/potemkin666/DhampirOS/actions/runs/42214943797",
+  "verifier_source_commit": "f99f1bfe65db60f3669c2be4b03e84bfa8fa903c",
+  "scope": "Exact public alpha ISO booted through an optical drive in VirtualBox 7.2.22 on disposable Linux runners. Both original final desktop captures visually reviewed.",
+  "image": {
+    "url": "https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/DhampirOS-0.1.0-alpha.1-amd64.iso",
+    "sha256": "eb1ca786925cd90c937878aafc0075c669a961ed439e11dc1550a9e516b9972f",
+    "bytes": 1471897600,
+    "source_commit": "db5152d816559ed2365f81486c4106b17f20af83"
+  },
+  "firmwares": {
+    "bios": {
+      "outcome": "desktop",
+      "capture": "dhampiros-virtualbox-iso-bios/boot-360.png",
+      "capture_sha256": "9f2b283cc114f12e3ffe1667995698b7c8f567a52cf684eefe3aca3924833b18",
+      "environment": {
+        "target": "iso",
+        "virtualbox": "7.2.22r175245",
+        "kernel": "7.0.0-1017-azure",
+        "firmware": "bios",
+        "network": "all adapters disabled",
+        "clipboard": "disabled",
+        "drag_and_drop": "disabled",
+        "shared_folders": "none",
+        "usb": "disabled",
+        "remote_display": "disabled",
+        "writes": "fresh disposable import; published bytes unchanged",
+        "declared_memory_mib": "4096",
+        "declared_cpus": "2"
+      },
+      "environment_note": "The verifier inherited an import label for writes; the recorded VM configuration and test source show an optical ISO attachment with no virtual hard disk.",
+      "evidence_sha256": {
+        "attestation-verification.json": "39a299512f144b61b95a5811eae2ddb8337daa55c4d146905b036b8c141a2199",
+        "boot-20.png": "d9bf3902c21e63620478140bd3125aee513ef8957ce1185e81c33b3e62098154",
+        "boot-240.png": "86021f5695b6dac5e190f2e7746ce634f18b069d527540409f6b7b440af84a7e",
+        "boot-360.png": "9f2b283cc114f12e3ffe1667995698b7c8f567a52cf684eefe3aca3924833b18",
+        "boot-90.png": "05c0461c7d516eeb77ad0735e3e4b4bb1020c20711c5e6ec98d8d8ddac4b0c9a",
+        "boot-environment.json": "5f794cccb99c0988f314625d0cb4a908003a29aedb1c6e3b1e0274922e7eefdc",
+        "capture-status.json": "511ad7990273f4baffd49ba685b954053bfac8c08f98027552bf4eaebd111ff0",
+        "declared-resources.json": "177c976e977b552df73475f4d18999d604606bee37314afc5ebad8d61690d0c6",
+        "host-apt-update.log": "8e118f53534e448f0e93ca140af300db898c14e3c694741e315172331c209d49",
+        "host-install.log": "1d794ac548babee39181b4e5508c6d79a66d91c4fbc9cbdde291ec09b53c05ff",
+        "host-package.json": "87e2e383242d73befcc493bda261e0198f2fbb965cda9c863350f7e785cbdf88",
+        "image-identity.json": "90808382a7e2e7a1a4806d14d6464cb6600476a2ae131d0a815ed996a6ebe3ae",
+        "VBox.log": "cfa98d851fdd46a89b934dc936684612c70fc623dcdf095f2fe1f36e131e68d0",
+        "vm-before-boot.txt": "ffde12593dc4dbcb2f1cf23fdbf799ee97884883d46d89f6ac3482a993f652e7"
+      }
+    },
+    "efi": {
+      "outcome": "desktop",
+      "capture": "dhampiros-virtualbox-iso-efi/boot-360.png",
+      "capture_sha256": "2b393c8c2affed3c1a45b5f4971c2d2050b150ec350145c5bf06fc0cbd1207c0",
+      "environment": {
+        "target": "iso",
+        "virtualbox": "7.2.22r175245",
+        "kernel": "7.0.0-1017-azure",
+        "firmware": "efi",
+        "network": "all adapters disabled",
+        "clipboard": "disabled",
+        "drag_and_drop": "disabled",
+        "shared_folders": "none",
+        "usb": "disabled",
+        "remote_display": "disabled",
+        "writes": "fresh disposable import; published bytes unchanged",
+        "declared_memory_mib": "4096",
+        "declared_cpus": "2"
+      },
+      "environment_note": "The verifier inherited an import label for writes; the recorded VM configuration and test source show an optical ISO attachment with no virtual hard disk.",
+      "evidence_sha256": {
+        "attestation-verification.json": "39a299512f144b61b95a5811eae2ddb8337daa55c4d146905b036b8c141a2199",
+        "boot-20.png": "5a0898cab99850bff306b6aef4c60d3cab6fc298a13906547b6208b5d73f46d4",
+        "boot-240.png": "fbeef3601be9b219948d2b8130d32f8fcc28dc06a7316f4ab636229fad70a250",
+        "boot-360.png": "2b393c8c2affed3c1a45b5f4971c2d2050b150ec350145c5bf06fc0cbd1207c0",
+        "boot-90.png": "41d1e13905a3072d1b22c6f146ff57e7f1f0e79d34b1714cf3653508d85258c2",
+        "boot-environment.json": "a17344c2a5e24091ce679ce3f2d659a23796897fb1789f2a69bbdc16032ea7f7",
+        "capture-status.json": "a37cf608a576480d198edf065a4c22486ee0e5d15b761e8d9fc63592f5b239d3",
+        "declared-resources.json": "177c976e977b552df73475f4d18999d604606bee37314afc5ebad8d61690d0c6",
+        "host-apt-update.log": "db6b90cd67e2340bccda04b49b4d4943775ca7e43beb81c92ac6b16c2d14fb81",
+        "host-install.log": "13497ae648665f64cbceb20f0dae2303825f3b4ca08e7be4302409d90862f9a6",
+        "host-package.json": "87e2e383242d73befcc493bda261e0198f2fbb965cda9c863350f7e785cbdf88",
+        "image-identity.json": "90808382a7e2e7a1a4806d14d6464cb6600476a2ae131d0a815ed996a6ebe3ae",
+        "VBox.log": "0b5816fb8697c57a9a79843c266d38527b0860eddabaedced78c7b8df927b618",
+        "vm-before-boot.txt": "2d4c919e642ad362abd11f5452494cb9326bb916b591f54719596b9717f01336"
+      }
+    }
+  },
+  "resources": {
+    "memory_mib": 4096,
+    "processors": 2,
+    "virtual_hard_disks": 0
+  },
+  "limitations": [
+    "Not a physical hardware, Windows/macOS VirtualBox host or installation test.",
+    "Secure Boot is covered by the separate QEMU/OVMF report; this does not establish Secure Boot in VirtualBox.",
+    "No image rebuild or fresh vulnerability scan. Original unresolved findings, tirdad observation and experimental-alpha limits remain.",
+    "Configure upstream passwordless account defaults before persistent use."
+  ],
+  "secure_boot_review": "https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/secure-boot-hardware-report.json"
+}

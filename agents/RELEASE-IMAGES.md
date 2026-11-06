@@ -165,3 +165,25 @@ This does not verify Windows/macOS VirtualBox hosts, physical hardware,
 Secure Boot, network/update operation, complete application use or the full
 login/lock lifecycle. It is not a fresh vulnerability scan. Original unresolved
 tracker findings, coverage limits and experimental-alpha restrictions remain.
+
+## Native VirtualBox ISO confirmation
+
+Run `42214943797` on 2026-11-06, verifier source
+`f99f1bfe65db60f3669c2be4b03e84bfa8fa903c`, authenticated the exact public ISO
+and its original build attestation, then reached the original Dhampir desktop
+in actual VirtualBox `7.2.22r175245` under both BIOS and EFI. Both original
+final captures were visually reviewed. The live test used 4 GiB RAM, 2 vCPUs
+and an optical drive, with no virtual hard disk or unattended installation.
+All network adapters and host-integration features were disabled.
+
+The exact identities and capture/file hashes are recorded in
+`release-reviews/v0.1.0-alpha.1-virtualbox-iso.json`. The release retains the
+original reports and adds `virtualbox-iso-runtime-report.json`,
+`DhampirOS-VirtualBox-ISO-review.zip` and `VIRTUALBOX-ISO-SHA256SUMS`. Public
+URLs and sizes were checked, and report bytes matched. The inherited raw
+environment label said import; the VM configuration and source establish
+that this ISO lane attached no hard disk. Future labels distinguish the lanes.
+
+This is a native Linux VirtualBox compatibility check, not physical hardware,
+Windows/macOS-host, installation, new vulnerability-scan or VirtualBox Secure
+Boot validation. The earlier security limitations and alpha scope remain.

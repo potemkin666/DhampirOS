@@ -2,6 +2,12 @@ name: DhampirOS VirtualBox runtime
 
 on:
   workflow_dispatch:
+    inputs:
+      target:
+        description: Published image to boot in VirtualBox
+        type: choice
+        options: [ova, iso]
+        default: ova
   push:
     branches: ['codex/virtualbox-runtime']
     paths:
@@ -27,6 +33,8 @@ jobs:
     permissions:
       contents: read
       attestations: read
+    env:
+      IMAGE_TARGET: ${{ inputs.target || 'ova' }}
     steps:
       - name: Bootstrap the disposable VirtualBox host
         run: |
@@ -38,11 +46,11 @@ jobs:
           fetch-depth: 0
       - name: Install the pinned VirtualBox host from its authenticated repository
         run: ./ci/verify-virtualbox.py setup
-      - name: Retrieve and authenticate the published appliance
+      - name: Retrieve and authenticate the published image
         env:
           GH_TOKEN: ${{ github.token }}
         run: ./ci/verify-virtualbox.py prepare
-      - name: Boot the imported appliance without host integration or network
+      - name: Boot the image without host integration or network
         env:
           VM_FIRMWARE: ${{ matrix.firmware }}
         run: ./ci/verify-virtualbox.py boot
@@ -50,7 +58,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
-          name: dhampiros-virtualbox-runtime-${{ matrix.firmware }}
+          name: dhampiros-virtualbox-${{ inputs.target || 'ova' }}-${{ matrix.firmware }}
           path: verification/virtualbox/
           if-no-files-found: warn
           retention-days: 30

@@ -116,3 +116,11 @@ to that source with `Signed-By`, with no `trusted=yes` or host-wide trust.
 No Extension Pack is installed. The guest runs without a workflow token,
 network, shared folders, clipboard, drag/drop, USB or remote display.
 Original captures require visual review before claiming desktop success.
+
+The manual runtime workflow accepts only `ova` or `iso` through `IMAGE_TARGET`;
+the verifier rejects other values before setup. Both choices authenticate the
+exact original reviewed release digest and build attestation. The OVA lane
+preserves its imported resources. The ISO lane creates a fresh temporary VM
+with 4 GiB RAM, 2 vCPUs and an optical attachment, without a virtual hard disk
+or unattended installer. Both firmware modes retain the same host-integration
+and network restrictions. No local removable drive is attached to these jobs.
