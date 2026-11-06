@@ -7,6 +7,13 @@
 .download-kind{font:400 48px Georgia,serif;color:#dce5f1;letter-spacing:.03em}
 .download-card h3{font:400 24px Georgia,serif;margin:18px 0 4px;color:var(--white)}
 .download-card p{color:var(--muted);font-size:13px;line-height:1.8}
+.download-card .download-purpose{font-size:10px;letter-spacing:.12em;color:#9eafc4;margin:0 0 18px}
+.recommended-download{border-color:#8b7a5e}
+.recommended-download .download-purpose{color:#d4bd95}
+.download-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.download-share{font:inherit;font-size:12px;min-height:44px;padding:8px 0;background:none;border:0;color:#afcbe1;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.download-share:focus-visible{outline:2px solid #b9d7ef;outline-offset:5px}
+.download-share[disabled]{display:none}
 .download-card .download-meta{font:11px monospace;letter-spacing:.04em;color:#b5a17c;margin:18px 0}
 .download-button{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:12px 22px;border:1px solid #73849f;border-radius:5px;background:#243146;color:#e9eff8;font-family:inherit;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer}
 .download-button:hover{background:#30415b;border-color:#c3d4ef}
