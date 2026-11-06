@@ -34,12 +34,24 @@
       link.className = 'download-button';
       link.href = assetURL(asset.url);
       link.textContent = `Download .${kind}`;
-      card.querySelector('button').replaceWith(link);
+      card.querySelector('.download-button').replaceWith(link);
       card.querySelector('.download-meta').textContent =
         `${release.version} / AMD64 / ${(asset.bytes / 1073741824).toFixed(2)} GiB`;
       const hash = card.querySelector('.download-hash');
       hash.hidden = false;
       hash.querySelector('code').textContent = asset.sha256;
+      const share = card.querySelector('[data-copy-download]');
+      share.disabled = false;
+      share.addEventListener('click', async () => {
+        const notice = document.getElementById('download-copy-status');
+        try {
+          await navigator.clipboard.writeText(assetURL(asset.url));
+          notice.textContent = `The .${kind} download link is copied and ready to share.`;
+        } catch {
+          notice.textContent = 'Copy is unavailable here. Use your browser\'s Copy link command on the download button.';
+        }
+        notice.hidden = false;
+      });
     });
     const status = document.getElementById('download-status');
     status.textContent = release.tracker_findings_present ?

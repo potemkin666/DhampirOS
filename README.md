@@ -12,6 +12,8 @@
 
 <a href="https://potemkin666.github.io/DhampirOS/#icons"><b>✦ EXPLORE THE INTERACTIVE DESKTOP ✦</b></a>
 
+[**Download the VirtualBox OVA**](https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/DhampirOS-0.1.0-alpha.1-amd64.ova) &nbsp; · &nbsp; [**Download the ISO**](https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/DhampirOS-0.1.0-alpha.1-amd64.iso) &nbsp; · &nbsp; [Checksums and release limits](https://potemkin666.github.io/DhampirOS/#downloads)
+
 <sub>Move windows, browse Files, change the wallpaper and explore the login, setup and icon previews. Original project artwork with a quiet 24-second motion loop. Interactive visual study; experimental alpha images are now available.</sub>
 
 <br><br>

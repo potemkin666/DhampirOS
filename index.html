@@ -26,7 +26,7 @@
       <img class="hero-bg" src="showcase/assets/wallpapers/rider.webp" alt="D and his horse on a storm-swept ridge beneath distant gothic towers" fetchpriority="high">
       <video class="hero-bg motion-video" id="hero-video" muted loop playsinline preload="none" aria-hidden="true" poster="showcase/assets/wallpapers/rider.webp"><source data-src="showcase/assets/motion/nocturne-rider.webm" type="video/webm"><source data-src="showcase/assets/motion/nocturne-rider.mp4" type="video/mp4"></video>
       <div class="hero-shade"></div>
-      <div class="hero-content"><p class="eyebrow">A VAMPIRE HUNTER D–INSPIRED LINUX PROJECT</p><h1 id="hero-title">DhampirOS</h1><p class="hero-by">by potemkin</p><p class="lede">At home in the half-light.</p><p class="hero-description">A midnight desktop. Silver edges. A frontier that stirs in the wind. Explore the visual world of a custom Kicksecure-based OS.</p><div class="hero-actions"><a class="primary-link" href="#icons">Step into the desktop <span aria-hidden="true">↗</span></a><a class="text-link" href="#artwork">Meet the artwork</a></div><p class="hero-status"><span aria-hidden="true"></span> Experimental alpha images · interactive visual preview</p></div>
+      <div class="hero-content"><p class="eyebrow">A VAMPIRE HUNTER D–INSPIRED LINUX PROJECT</p><h1 id="hero-title">DhampirOS</h1><p class="hero-by">by potemkin</p><p class="lede">At home in the half-light.</p><p class="hero-description">A midnight desktop. Silver edges. A frontier that stirs in the wind. Explore the visual world of a custom Kicksecure-based OS.</p><div class="hero-actions"><a class="primary-link" href="#icons">Step into the desktop <span aria-hidden="true">↗</span></a><a class="text-link" href="#downloads">Download the alpha</a></div><p class="hero-status"><span aria-hidden="true"></span> Experimental alpha images · interactive visual preview</p></div>
       <div class="hero-caption"><span>RAINBOUND HUNTER / NOCTURNE</span><button id="hero-motion" type="button" aria-pressed="true">Pause motion</button></div>
     </section>
 
@@ -59,25 +59,28 @@
     <section id="downloads" class="section download-section" aria-labelledby="download-title">
       <p class="kicker">TAKE THE FRONTIER WITH YOU</p>
       <h2 id="download-title">Your own half-light.</h2>
-      <p class="download-intro">The full DhampirOS desktop, built on Kicksecure. Choose a bootable image or an appliance for your virtual machine.</p>
+      <p class="download-intro">The full DhampirOS desktop, built on Kicksecure. For a ready-made VirtualBox machine, choose the OVA. Choose the ISO to boot a new virtual machine.</p>
       <p class="download-scope" id="download-status" role="status">Experimental alpha for isolated VM testing. Read the verification report and remaining limits before use.</p>
       <p class="download-scope account-policy"><strong>Before persistent use:</strong> the alpha retains upstream passwordless local autologin and account setup. Configure account credentials before keeping personal data in a VM.</p>
       <div class="download-grid">
-        <article class="download-card" data-download="iso">
-          <span class="download-kind" aria-hidden="true">.iso</span><h3>Bootable image</h3>
-          <p>Boot in a virtual machine to explore the desktop. Hardware installation support must be confirmed in the release report.</p>
-          <p class="download-meta">AMD64 / Intel &amp; AMD 64-bit PCs</p>
-          <button class="download-button" type="button" disabled>ISO awaiting verification</button>
+        <article class="download-card recommended-download" data-download="ova">
+          <p class="download-purpose">RECOMMENDED FOR VIRTUALBOX</p>
+          <span class="download-kind" aria-hidden="true">.ova</span><h3>Your ready-made machine</h3>
+          <p>In VirtualBox, choose <strong>Import</strong> and select the OVA file. Review the appliance settings, import, then start the machine.</p>
+          <p class="download-meta">AMD64 / VirtualBox / 2 GiB RAM / 3 vCPUs</p>
+          <div class="download-actions"><button class="download-button" type="button" disabled>OVA awaiting verification</button><button class="download-share" type="button" data-copy-download disabled aria-label="Copy OVA download link">Copy link</button></div>
           <details class="download-hash" hidden><summary>SHA-256 fingerprint</summary><code></code></details>
         </article>
-        <article class="download-card" data-download="ova">
-          <span class="download-kind" aria-hidden="true">.ova</span><h3>VirtualBox appliance</h3>
-          <p>Import a ready-made machine into VirtualBox. Review its network and device settings before the first start.</p>
-          <p class="download-meta">AMD64 / VirtualBox</p>
-          <button class="download-button" type="button" disabled>OVA awaiting verification</button>
+        <article class="download-card" data-download="iso">
+          <p class="download-purpose">BOOT A NEW VIRTUAL MACHINE</p>
+          <span class="download-kind" aria-hidden="true">.iso</span><h3>Your bootable ISO</h3>
+          <p>In VirtualBox, choose <strong>New</strong>, select the ISO and turn off unattended installation if offered. Boot it through the VM's virtual optical drive to explore the desktop.</p>
+          <p class="download-meta">AMD64 / Intel &amp; AMD 64-bit PCs</p>
+          <div class="download-actions"><button class="download-button" type="button" disabled>ISO awaiting verification</button><button class="download-share" type="button" data-copy-download disabled aria-label="Copy ISO download link">Copy link</button></div>
           <details class="download-hash" hidden><summary>SHA-256 fingerprint</summary><code></code></details>
         </article>
       </div>
+      <p id="download-copy-status" class="download-scope" role="status" hidden></p>
       <div class="download-assurance" id="download-evidence" hidden><a data-checksums>Checksums</a><a data-report>Original verification report</a><a href="https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/virtualbox-runtime-report.json">VirtualBox boot review</a><a data-source>Exact source</a></div>
       <noscript><p class="download-scope">Downloads without JavaScript: <a class="download-build-link" href="https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/DhampirOS-0.1.0-alpha.1-amd64.iso">ISO</a> · <a class="download-build-link" href="https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/DhampirOS-0.1.0-alpha.1-amd64.ova">OVA</a> · <a class="download-build-link" href="https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/SHA256SUMS">Checksums</a> · <a class="download-build-link" href="https://github.com/potemkin666/DhampirOS/releases/download/v0.1.0-alpha.1/verification-report.json">Verification report</a>.</p></noscript>
       <p class="download-scope">Experimental alpha. Checksums detect changed downloads; the verification report records the checks actually performed and any remaining limits. DhampirOS is an independent derivative and has not received a security certification.</p>
