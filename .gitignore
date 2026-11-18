@@ -47,3 +47,5 @@ build_sources/debian_stable_frozen_direct_clearnet.sources
 *.sha512
 *.sig
 dhampir-build/
+# Private local backups produced by the Windows VM compatibility repair.
+/tools/windows/backup-*/
