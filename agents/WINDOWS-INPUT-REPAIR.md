@@ -39,6 +39,26 @@ and refusal of running/saved VMs. Actual Windows VirtualBox interactive and
 Bluetooth input verification remain pending. Published image bytes and their
 original verification evidence are unchanged.
 
+## USB launch path
+
+The USB also includes `Start-DhampirOS.cmd`. It verifies the original ISO's
+exact size/SHA-256, then creates or reuses only a marked `DhampirOS USB Live`
+VM. Configuration/logs are host-local under LOCALAPPDATA; the ISO is read
+from the USB as a virtual DVD, never passed through as physical USB media.
+It uses 4 GiB/2 vCPUs, BIOS, VMSVGA without 3D, PS/2 input, no USB capture,
+NAT, and disabled clipboard/drag-drop/VRDE. It creates no virtual hard disk;
+this is an ephemeral live session. Other running VMs block launch. An existing
+unmarked VM with the same name is refused. The launcher is tested with a
+mock CLI; actual Windows VirtualBox input/freeze resolution remains pending.
+
+On 2026-11-18 the connected USB was reidentified as D:, Verbatim STORE N GO,
+115 GiB FAT32, non-boot/non-system USB disk, containing the original
+`DhampirOS` image folder and supplied diagnostic report. This is not the
+earlier Toshiba data disk associated with D:. User explicitly requested
+copying the fix to the connected USB. Add files only; do not format media,
+change partitions or rewrite the existing ISO/OVA. Never infer identity
+from the drive letter alone on subsequent runs.
+
 Primary references checked on 2026-11-18:
 - https://docs.oracle.com/en/virtualization/virtualbox/7.2/user/vboxmanage.html#vboxmanage-modifyvm
 - https://docs.oracle.com/en/virtualization/virtualbox/7.2/user/working-with-vms.html#settings-usb
